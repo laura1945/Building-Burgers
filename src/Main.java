@@ -28,7 +28,7 @@ public class Main extends AbstractGame
 	private static Color white = Helper.WHITE;
 	private static Color black = Helper.BLACK;
 	private static Color red = Helper.RED;
-	private static Color blue = Helper.BLUE;
+	private static Color purple = Helper.BLUE;
 	private static Color lightBlue = Helper.GetColor(135, 212, 245);
 	private static Color darkRed = Helper.GetColor(183, 22, 22);
 	private static Color green = Helper.GetColor(103, 238, 70);
