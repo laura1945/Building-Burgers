@@ -33,7 +33,7 @@ public class Main extends AbstractGame
 	private static Color green = Helper.GetColor(103, 238, 70);
 	
 	private static GameRectangle [] container = new GameRectangle [8];
-	private static GameRectangle finishButton = new GameRectangle (738, 400, 200, 150, 1, green, red, 1f);
+	private static GameRectangle finishButton = new GameRectangle (738, 400, 200, 150, 5, red, red, 1f);
 	
 	private static Font menuFont = new Font("Impact", Font.BOLD, 120);
 	private static Font instructionFont = new Font("Impact", Font.PLAIN, 30);
@@ -64,14 +64,14 @@ public class Main extends AbstractGame
 		orderTicketIngr[0] = "bun";
 		orderTicketIngr[8] = "bun";
 		
-		container [0] = new GameRectangle(45, 465, 216, 228, 5, white, 1f);
-		container [1] = new GameRectangle(276, 465, 216, 228, 5, white, 1f);
-		container [2] = new GameRectangle(507, 465, 216, 228, 5, white, 1f);
-		container [3] = new GameRectangle(738, 465, 216, 228, 5, white, 1f);
-		container [4] = new GameRectangle(45, 708, 216, 228, 5, white, 1f);
-		container [5] = new GameRectangle(276, 708, 216, 228, 5, white, 1f);
-		container [6] = new GameRectangle(507, 708, 216, 228, 5, white, 1f);
-		container [7] = new GameRectangle(738, 708, 216, 228, 5, white, 1f);
+		container [0] = new GameRectangle(45, 465, 216, 228, 5, green, black, 1f);
+		container [1] = new GameRectangle(276, 465, 216, 228, 5, white, black, 1f);
+		container [2] = new GameRectangle(507, 465, 216, 228, 5, white, black, 1f);
+		container [3] = new GameRectangle(738, 465, 216, 228, 5, white, black, 1f);
+		container [4] = new GameRectangle(45, 708, 216, 228, 5, lightBlue, black, 1f);
+		container [5] = new GameRectangle(276, 708, 216, 228, 5, white, black, 1f);
+		container [6] = new GameRectangle(507, 708, 216, 228, 5, white, black, 1f);
+		container [7] = new GameRectangle(738, 708, 216, 228, 5, red, black, 1f);
 	}
 	
 	@Override
@@ -173,7 +173,7 @@ public class Main extends AbstractGame
 		}
 		else if (menuText == "Game Play")
 		{
-			finishButton.Draw(gfx);
+			drawRecFill(finishButton, gfx);
 			
 			drawOrder(gfx, 1, 100);
 			drawOrder(gfx, 2, 125);
@@ -187,7 +187,8 @@ public class Main extends AbstractGame
 			
 			for (int i = 0; i < 8; i++)
 			{
-				container[i].Draw(gfx);
+				GameRectangle rec = container[i];
+				drawRecLine(rec, gfx);
 			}
 			
 		}
@@ -254,5 +255,21 @@ public class Main extends AbstractGame
 		{
 			return false;
 		}
+	}
+	
+	private static void drawRecLine (GameRectangle rec, Graphics2D gfx)
+	{
+		float height = rec.GetBottom() - rec.GetTop();
+		float width = rec.GetRight() - rec.GetLeft();
+		Draw.Rect(gfx, rec.GetLeft(), rec.GetTop(), width, height, rec.GetBorderWidth(), rec.GetBorderColor(), rec.GetTransparency());
+		
+	}
+	
+	private static void drawRecFill (GameRectangle rec, Graphics2D gfx)
+	{
+		float height = rec.GetBottom() - rec.GetTop();
+		float width = rec.GetRight() - rec.GetLeft();
+		Draw.FillRect(gfx, rec.GetLeft(), rec.GetTop(), width, height, rec.GetFillColor(), rec.GetTransparency());
+		
 	}
 }
