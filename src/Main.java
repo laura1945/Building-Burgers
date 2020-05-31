@@ -28,10 +28,12 @@ public class Main extends AbstractGame
 	private static Color white = Helper.WHITE;
 	private static Color black = Helper.BLACK;
 	private static Color red = Helper.RED;
-	private static Color purple = Helper.BLUE;
 	private static Color lightBlue = Helper.GetColor(135, 212, 245);
 	private static Color darkRed = Helper.GetColor(183, 22, 22);
 	private static Color green = Helper.GetColor(103, 238, 70);
+	
+	private static GameRectangle [] container = new GameRectangle [8];
+	private static GameRectangle finishButton = new GameRectangle (738, 400, 200, 150, 1, green, red, 1f);
 	
 	private static Font menuFont = new Font("Impact", Font.BOLD, 120);
 	private static Font instructionFont = new Font("Impact", Font.PLAIN, 30);
@@ -39,12 +41,15 @@ public class Main extends AbstractGame
 
 	private static Color screenColour = lightBlue;
 	private static String menuText = "Menu";
-	//private static int [] menuTxtCoord = new int[]{340, 520};
+	
+	private static Vector2F mousePos = Input.GetMousePos();
 	
 	private static boolean alive;
 	private static int timesGen = 0;
 	
-	private static String [] orderTicketIngr = new String[8];
+	private static String [] orderTicketIngr = new String[9];
+	private static String [] stack = new String[9];
+	private static int currentLayer = 0;
 	
 	public static void main(String[] args) 
 	{
@@ -56,7 +61,17 @@ public class Main extends AbstractGame
 	public void LoadContent(GameContainer gc)
 	{
 		//System.out.println("\n\norderTicketIngr: " + orderTicketIngr[0] + " " + orderTicketIngr[1] + " " + orderTicketIngr[2] + " " + orderTicketIngr[3] + " " + orderTicketIngr[4] + " " + orderTicketIngr[5] + " " + orderTicketIngr[6] + " " + orderTicketIngr[7]);
+		orderTicketIngr[0] = "bun";
+		orderTicketIngr[8] = "bun";
 		
+		container [0] = new GameRectangle(45, 465, 216, 228, 5, white, 1f);
+		container [1] = new GameRectangle(276, 465, 216, 228, 5, white, 1f);
+		container [2] = new GameRectangle(507, 465, 216, 228, 5, white, 1f);
+		container [3] = new GameRectangle(738, 465, 216, 228, 5, white, 1f);
+		container [4] = new GameRectangle(45, 708, 216, 228, 5, white, 1f);
+		container [5] = new GameRectangle(276, 708, 216, 228, 5, white, 1f);
+		container [6] = new GameRectangle(507, 708, 216, 228, 5, white, 1f);
+		container [7] = new GameRectangle(738, 708, 216, 228, 5, white, 1f);
 	}
 	
 	@Override
@@ -66,8 +81,6 @@ public class Main extends AbstractGame
 		{
 			screenColour = darkRed;
 			menuText = "Instructions";
-			//menuTxtCoord[0] = 150;
-			//menuTxtCoord[1] = 200;
 		}
 		else if (Input.IsKeyReleased(KeyEvent.VK_G))
 		{
@@ -79,27 +92,70 @@ public class Main extends AbstractGame
 		{
 			screenColour = lightBlue;
 			menuText = "Menu";
-			//menuTxtCoord[0] = 340;
-			//menuTxtCoord[1] = 520;
 		}
 		
+		//Generates ingredients when user starts game
 		if (alive == true && timesGen == 0)
 		{
 			genIngredients();
 			timesGen = 1;
 		}
-
+		
+		//Checks mouse click position
+		if (alive == true && Input.IsMouseButtonReleased(Input.MOUSE_LEFT))
+		{
+			if (currentLayer < 9)
+			{
+				if (clickIngredient(container[0])){
+					stack[currentLayer] = "tomatoes";
+				}
+				else if (clickIngredient(container[1])){
+					stack[currentLayer] = "cheese";
+				}
+				else if (clickIngredient(container[2])){
+					stack[currentLayer] = "lettuce";
+				}
+				else if (clickIngredient(container[3])){
+					stack[currentLayer] = "onions";
+				}
+				else if (clickIngredient(container[4])){
+					stack[currentLayer] = "beef patty";
+				}
+				else if (clickIngredient(container[5])){
+					stack[currentLayer] = "bacon";
+				}
+				else if (clickIngredient(container[6])){
+					stack[currentLayer] = "egg";
+				}
+				else if (clickIngredient(container[7])){
+					stack[currentLayer] = "bun";
+				}
+				System.out.println(stack[currentLayer]);
+				System.out.println(currentLayer);
+				currentLayer++;
+				System.out.println(currentLayer);
+			}
+			else
+			{
+				System.out.println("You can not stack more ingredients");
+			}
+		}
+		
+		if (Input.IsKeyReleased(KeyEvent.VK_Z) && currentLayer > 0)
+		{
+			currentLayer--;
+			System.out.println(currentLayer);
+		}
+		else if (Input.IsKeyReleased(KeyEvent.VK_Z) && currentLayer == 0)
+		{
+			System.out.println("You can not remove an ingredient that doesn't exist");
+		}
 	}
 
 	@Override
 	public void Draw(GameContainer gc, Graphics2D gfx) 
 	{
 		Draw.FillRect(gfx, 0, 0, 1000, 1000, screenColour, 1f);
-		
-		if (!(menuText == "Game Play"))
-		{
-			//Draw.Text(gfx, menuText, menuTxtCoord[0], menuTxtCoord[1], menuFont, white, 1f);
-		}
 		
 		if (menuText == "Menu")
 		{
@@ -117,16 +173,22 @@ public class Main extends AbstractGame
 		}
 		else if (menuText == "Game Play")
 		{
-			drawOrder(gfx, 0, 100);
-			drawOrder(gfx, 1, 125);
-			drawOrder(gfx, 2, 150);
-			drawOrder(gfx, 3, 175);
-			drawOrder(gfx, 4, 200);
-			drawOrder(gfx, 5, 225);
-			drawOrder(gfx, 6, 250);
-			drawOrder(gfx, 7, 275);
+			finishButton.Draw(gfx);
 			
-			Draw.Rect(gfx, 30, 600, 940, 300, 5, white, 1f);
+			drawOrder(gfx, 1, 100);
+			drawOrder(gfx, 2, 125);
+			drawOrder(gfx, 3, 150);
+			drawOrder(gfx, 4, 175);
+			drawOrder(gfx, 5, 200);
+			drawOrder(gfx, 6, 225);
+			drawOrder(gfx, 7, 250);
+			
+			Draw.Rect(gfx, 30, 450, 940, 500, 5, red, 1f);
+			
+			for (int i = 0; i < 8; i++)
+			{
+				container[i].Draw(gfx);
+			}
 			
 		}
 	}
@@ -138,7 +200,7 @@ public class Main extends AbstractGame
 		int rangeHigh = 8;
 		int ingredientNum;
 		
-		for (int i = 0; i < 8; i++)
+		for (int i = 1; i <= 7; i++)
 		{
 			ingredientNum = (int)((rng.nextFloat() * (rangeHigh - rangeLow)) + rangeLow);
 			
@@ -168,19 +230,29 @@ public class Main extends AbstractGame
 			}
 			else if (ingredientNum == 7)
 			{
-				orderTicketIngr[i] = "hot sauce";
-			}
-			else if (ingredientNum == 8)
-			{
-				orderTicketIngr[i] = "sour cream";
+				orderTicketIngr[i] = "egg";
 			}
 		}
-		System.out.println("ingredients: " + orderTicketIngr[0] + " " + orderTicketIngr[1] + " " + orderTicketIngr[2] + " " + orderTicketIngr[3] + " " + orderTicketIngr[4] + " " + orderTicketIngr[5] + " " + orderTicketIngr[6] + " " + orderTicketIngr[7]);
+		System.out.println("ingredients: " + orderTicketIngr[0] + " " + orderTicketIngr[1] + " " + orderTicketIngr[2] + " " + orderTicketIngr[3] + " " + orderTicketIngr[4] + " " + orderTicketIngr[5] + " " + orderTicketIngr[6] + " " + orderTicketIngr[7] + " " + orderTicketIngr[8]);
 	}
 	
 	private static void drawOrder (Graphics2D gfx, int indexNum, int yCoord)
 	{
 		Draw.Text(gfx, orderTicketIngr[indexNum], 50, yCoord, orderFont, white, 1f);
 	}
-
+	
+	private static boolean clickIngredient (GameRectangle box)
+	{
+		if (mousePos.x >= box.GetLeft() && mousePos.x <= box.GetRight() &&	//Left/Right Walls 
+			mousePos.y >= box.GetTop() && mousePos.y <= box.GetBottom())	//Top/Bottom Walls
+		{
+			//int [] rect = new int [] {(int)box.GetLeft(), (int)box.GetTop()};
+			
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
 }
