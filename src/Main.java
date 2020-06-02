@@ -31,9 +31,11 @@ public class Main extends AbstractGame
 	private static Color lightBlue = Helper.GetColor(135, 212, 245);
 	private static Color darkRed = Helper.GetColor(183, 22, 22);
 	private static Color green = Helper.GetColor(103, 238, 70);
+	private static Color purple = Helper.GetColor(153, 51, 255);
 	
 	private static GameRectangle [] container = new GameRectangle [8];
-	private static GameRectangle finishButton = new GameRectangle (738, 400, 200, 150, 5, red, red, 1f);
+	private static GameCircle finishButton = new GameCircle (900, 350, 75, 5, red, red, 1f);
+	//private static boolean scoreScreen = false;
 	
 	private static Font menuFont = new Font("Impact", Font.BOLD, 120);
 	private static Font instructionFont = new Font("Impact", Font.PLAIN, 30);
@@ -47,9 +49,11 @@ public class Main extends AbstractGame
 	private static boolean alive;
 	private static int timesGen = 0;
 	
-	private static String [] orderTicketIngr = new String[9];
-	private static String [] stack = new String[9];
+	private static String [] orderTicketIngr = new String[10];
+	private static String [] stack = new String[10];
 	private static int currentLayer = 0;
+	
+	private static int score = 0;
 	
 	public static void main(String[] args) 
 	{
@@ -62,7 +66,7 @@ public class Main extends AbstractGame
 	{
 		//System.out.println("\n\norderTicketIngr: " + orderTicketIngr[0] + " " + orderTicketIngr[1] + " " + orderTicketIngr[2] + " " + orderTicketIngr[3] + " " + orderTicketIngr[4] + " " + orderTicketIngr[5] + " " + orderTicketIngr[6] + " " + orderTicketIngr[7]);
 		orderTicketIngr[0] = "bun";
-		orderTicketIngr[8] = "bun";
+		orderTicketIngr[9] = "bun";
 		
 		container [0] = new GameRectangle(45, 465, 216, 228, 5, green, black, 1f);
 		container [1] = new GameRectangle(276, 465, 216, 228, 5, white, black, 1f);
@@ -104,38 +108,51 @@ public class Main extends AbstractGame
 		//Checks mouse click position
 		if (alive == true && Input.IsMouseButtonReleased(Input.MOUSE_LEFT))
 		{
-			if (currentLayer < 9)
+			
+			if (pointCircleColl(finishButton))
 			{
-				if (clickIngredient(container[0])){
+				alive = false;
+				menuText = "Score Screen";
+				screenColour = purple;
+				
+				calcScore();
+			}
+			
+			if (currentLayer < 10)
+			{
+				if (pointBoxColl(container[0])){
 					stack[currentLayer] = "tomatoes";
 				}
-				else if (clickIngredient(container[1])){
+				else if (pointBoxColl(container[1])){
 					stack[currentLayer] = "cheese";
 				}
-				else if (clickIngredient(container[2])){
+				else if (pointBoxColl(container[2])){
 					stack[currentLayer] = "lettuce";
 				}
-				else if (clickIngredient(container[3])){
+				else if (pointBoxColl(container[3])){
 					stack[currentLayer] = "onions";
 				}
-				else if (clickIngredient(container[4])){
+				else if (pointBoxColl(container[4])){
 					stack[currentLayer] = "beef patty";
 				}
-				else if (clickIngredient(container[5])){
+				else if (pointBoxColl(container[5])){
 					stack[currentLayer] = "bacon";
 				}
-				else if (clickIngredient(container[6])){
+				else if (pointBoxColl(container[6])){
 					stack[currentLayer] = "egg";
 				}
-				else if (clickIngredient(container[7])){
+				else if (pointBoxColl(container[7])){
 					stack[currentLayer] = "bun";
 				}
-				System.out.println(stack[currentLayer]);
-				System.out.println(currentLayer);
+				else 
+				{
+					currentLayer--;
+				}
+				System.out.println("current layer: "+currentLayer);
+				System.out.println("stack[currentLayer]: " + stack[currentLayer]);
 				currentLayer++;
-				System.out.println(currentLayer);
 			}
-			else
+			else if (currentLayer >= 10 && alive == true) 
 			{
 				System.out.println("You can not stack more ingredients");
 			}
@@ -159,7 +176,7 @@ public class Main extends AbstractGame
 		
 		if (menuText == "Menu")
 		{
-			Draw.Text(gfx, "Menu", 340, 520, menuFont, white, 1f);
+			Draw.Text(gfx, menuText, 340, 520, menuFont, white, 1f);
 			
 			Draw.Text(gfx, "Press I for instructions", 333, 700, instructionFont, white, 1f);
 			Draw.Text(gfx, "Press G for game play", 345, 750, instructionFont, white, 1f);
@@ -167,13 +184,14 @@ public class Main extends AbstractGame
 		}
 		else if (menuText == "Instructions")
 		{
-			Draw.Text(gfx, "Instructions", 150, 200, menuFont, white, 1f);
+			Draw.Text(gfx, menuText, 150, 200, menuFont, white, 1f);
 			
 			Draw.Text(gfx, "Are you ready to take on the challenge?", 200, 400, instructionFont, white, 1f);
 		}
 		else if (menuText == "Game Play")
 		{
-			drawRecFill(finishButton, gfx);
+			finishButton.Draw(gfx);
+			Draw.Text(gfx, "FINISH", 860, 360, instructionFont, white, 1f);
 			
 			drawOrder(gfx, 1, 100);
 			drawOrder(gfx, 2, 125);
@@ -182,6 +200,7 @@ public class Main extends AbstractGame
 			drawOrder(gfx, 5, 200);
 			drawOrder(gfx, 6, 225);
 			drawOrder(gfx, 7, 250);
+			drawOrder(gfx, 8, 275);
 			
 			Draw.Rect(gfx, 30, 450, 940, 500, 5, red, 1f);
 			
@@ -192,6 +211,12 @@ public class Main extends AbstractGame
 			}
 			
 		}
+		else if (menuText == "Score Screen")
+		{
+			Draw.Text(gfx, "Score", 150, 200, menuFont, white, 1f);
+			Draw.Text(gfx, "Your score:", 150, 450, instructionFont, white, 1f);
+			Draw.Text(gfx, Integer.toString(score), 300, 450, menuFont, white, 1f);
+		}
 	}
 	
 	static Random rng = new Random();
@@ -201,7 +226,7 @@ public class Main extends AbstractGame
 		int rangeHigh = 8;
 		int ingredientNum;
 		
-		for (int i = 1; i <= 7; i++)
+		for (int i = 1; i <= 8; i++)
 		{
 			ingredientNum = (int)((rng.nextFloat() * (rangeHigh - rangeLow)) + rangeLow);
 			
@@ -234,7 +259,7 @@ public class Main extends AbstractGame
 				orderTicketIngr[i] = "egg";
 			}
 		}
-		System.out.println("ingredients: " + orderTicketIngr[0] + " " + orderTicketIngr[1] + " " + orderTicketIngr[2] + " " + orderTicketIngr[3] + " " + orderTicketIngr[4] + " " + orderTicketIngr[5] + " " + orderTicketIngr[6] + " " + orderTicketIngr[7] + " " + orderTicketIngr[8]);
+		System.out.println("ingredients: " + orderTicketIngr[0] + " " + orderTicketIngr[1] + " " + orderTicketIngr[2] + " " + orderTicketIngr[3] + " " + orderTicketIngr[4] + " " + orderTicketIngr[5] + " " + orderTicketIngr[6] + " " + orderTicketIngr[7] + " " + orderTicketIngr[8]+ " " + orderTicketIngr[9]);
 	}
 	
 	private static void drawOrder (Graphics2D gfx, int indexNum, int yCoord)
@@ -242,13 +267,11 @@ public class Main extends AbstractGame
 		Draw.Text(gfx, orderTicketIngr[indexNum], 50, yCoord, orderFont, white, 1f);
 	}
 	
-	private static boolean clickIngredient (GameRectangle box)
+	private static boolean pointBoxColl (GameRectangle box)
 	{
 		if (mousePos.x >= box.GetLeft() && mousePos.x <= box.GetRight() &&	//Left/Right Walls 
 			mousePos.y >= box.GetTop() && mousePos.y <= box.GetBottom())	//Top/Bottom Walls
 		{
-			//int [] rect = new int [] {(int)box.GetLeft(), (int)box.GetTop()};
-			
 			return true;
 		}
 		else
@@ -265,11 +288,35 @@ public class Main extends AbstractGame
 		
 	}
 	
-	private static void drawRecFill (GameRectangle rec, Graphics2D gfx)
+	private static boolean pointCircleColl (GameCircle circle)
 	{
-		float height = rec.GetBottom() - rec.GetTop();
-		float width = rec.GetRight() - rec.GetLeft();
-		Draw.FillRect(gfx, rec.GetLeft(), rec.GetTop(), width, height, rec.GetFillColor(), rec.GetTransparency());
+		//Calculate the distance squared using pythagorean theorem between the point and
+		//the circle's centre
+		double distanceSqr = Math.pow(mousePos.x - circle.GetCentre().x, 2) + Math.pow(mousePos.y - circle.GetCentre().y, 2);
 		
+		//If that distance is within range of the radius then there is a collision
+		if (distanceSqr <= Math.pow(circle.GetRad(), 2))	//Uses the shortcut method to avoid square roots
+		{
+			return true;
+		}
+		
+		return false;
+	}
+	
+	private static void calcScore ()
+	{
+		double subtotal = 0;
+		
+		for (int i = 0; i < 10; i++)
+		{
+			if (orderTicketIngr[i] == stack[i])
+			{
+				subtotal++;
+			}
+		}
+		
+		subtotal = (subtotal / 10) * 100;
+		score = (int)subtotal;
+		System.out.println("score: " + score);
 	}
 }
