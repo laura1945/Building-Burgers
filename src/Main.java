@@ -40,20 +40,34 @@ public class Main extends AbstractGame
 	private static Font menuFont = new Font("Impact", Font.BOLD, 120);
 	private static Font instructionFont = new Font("Impact", Font.PLAIN, 30);
 	private static Font orderFont = new Font("Lucida Handwriting", Font.PLAIN, 20);
-
+	
+	private static SpriteSheet tomatoImg;
+	private static SpriteSheet cheeseImg;
+	private static SpriteSheet lettuceImg;
+	private static SpriteSheet onionImg;
+	private static SpriteSheet pattyImg;
+	private static SpriteSheet baconImg;
+	private static SpriteSheet eggImg;
+	private static SpriteSheet bottomBunImg;
+	private static SpriteSheet topBunImg;
+	
+	private static int [] stackCoord = new int [] {350, 240};
+ 
 	private static Color screenColour = lightBlue;
 	private static String menuText = "Menu";
 	
 	private static Vector2F mousePos = Input.GetMousePos();
 	
 	private static boolean alive;
-	private static int timesGen = 0;
+	private static int updateTracker = 0;
 	
 	private static String [] orderTicketIngr = new String[10];
 	private static String [] stack = new String[10];
 	private static int currentLayer = 0;
 	
 	private static int score = 0;
+	private static float timer = 100000; //The time in milliseconds
+	private static Integer seconds = 100; //The time in seconds
 	
 	public static void main(String[] args) 
 	{
@@ -64,6 +78,27 @@ public class Main extends AbstractGame
 	@Override
 	public void LoadContent(GameContainer gc)
 	{
+		tomatoImg = new SpriteSheet(LoadImage.FromFile("/images/sprites/tomato.png")); 
+		cheeseImg = new SpriteSheet(LoadImage.FromFile("/images/sprites/cheese.png"));
+		lettuceImg = new SpriteSheet(LoadImage.FromFile("/images/sprites/lettuce.png"));
+		onionImg = new SpriteSheet(LoadImage.FromFile("/images/sprites/onion.png"));
+		pattyImg = new SpriteSheet(LoadImage.FromFile("/images/sprites/patty.png"));
+		baconImg = new SpriteSheet(LoadImage.FromFile("/images/sprites/bacon.png"));
+		eggImg = new SpriteSheet(LoadImage.FromFile("/images/sprites/egg.png"));
+		bottomBunImg = new SpriteSheet(LoadImage.FromFile("/images/sprites/bottomBun.png"));
+		topBunImg = new SpriteSheet(LoadImage.FromFile("/images/sprites/topBun.png"));
+		
+		tomatoImg.destRec = new Rectangle(stackCoord[0], stackCoord[1], (int)(gc.GetWidth() * 0.25), (int)(gc.GetHeight() * 0.25));
+		cheeseImg.destRec = new Rectangle(stackCoord[0], stackCoord[1], (int)(gc.GetWidth() * 0.25), (int)(gc.GetHeight() * 0.25));
+		lettuceImg.destRec = new Rectangle(stackCoord[0], stackCoord[1], (int)(gc.GetWidth() * 0.25), (int)(gc.GetHeight() * 0.25));
+		onionImg.destRec = new Rectangle(stackCoord[0], stackCoord[1], (int)(gc.GetWidth() * 0.25), (int)(gc.GetHeight() * 0.25));
+		pattyImg.destRec = new Rectangle(stackCoord[0], stackCoord[1], (int)(gc.GetWidth() * 0.25), (int)(gc.GetHeight() * 0.25));
+		baconImg.destRec = new Rectangle(stackCoord[0], stackCoord[1], (int)(gc.GetWidth() * 0.25), (int)(gc.GetHeight() * 0.25));
+		eggImg.destRec = new Rectangle(stackCoord[0], stackCoord[1], (int)(gc.GetWidth() * 0.25), (int)(gc.GetHeight() * 0.25));
+		bottomBunImg.destRec = new Rectangle(stackCoord[0], stackCoord[1], (int)(gc.GetWidth() * 0.25), (int)(gc.GetHeight() * 0.25));
+		topBunImg.destRec = new Rectangle(stackCoord[0], stackCoord[1], (int)(gc.GetWidth() * 0.25), (int)(gc.GetHeight() * 0.25));
+		
+		
 		//System.out.println("\n\norderTicketIngr: " + orderTicketIngr[0] + " " + orderTicketIngr[1] + " " + orderTicketIngr[2] + " " + orderTicketIngr[3] + " " + orderTicketIngr[4] + " " + orderTicketIngr[5] + " " + orderTicketIngr[6] + " " + orderTicketIngr[7]);
 		orderTicketIngr[0] = "bun";
 		orderTicketIngr[9] = "bun";
@@ -99,26 +134,43 @@ public class Main extends AbstractGame
 		}
 		
 		//Generates ingredients when user starts game
-		if (alive == true && timesGen == 0)
+		if (alive == true && updateTracker == 0)
 		{
 			genIngredients();
-			timesGen = 1;
+			updateTracker = 1;
+		}
+		
+		if (seconds > 0 && alive == true) //Checks if seconds is more than 0
+		{
+			timer = timer - deltaTime; //Calculates the time in milliseconds
+			seconds = Math.round(timer/1000); //Converts the time in milliseconds to seconds
+		}
+		
+		if (seconds == 0 && updateTracker == 1)
+		{
+			alive = false;
+			menuText = "Score Screen";
+			screenColour = purple;
+			
+			calcScore();
+			resetGame();
 		}
 		
 		//Checks mouse click position
 		if (alive == true && Input.IsMouseButtonReleased(Input.MOUSE_LEFT))
 		{
 			
-			if (pointCircleColl(finishButton))
+			if (pointCircleColl(finishButton) || seconds == 0)
 			{
 				alive = false;
 				menuText = "Score Screen";
 				screenColour = purple;
 				
 				calcScore();
+				resetGame();
 			}
 			
-			if (currentLayer < 10)
+			if (currentLayer < 10 && !(pointCircleColl(finishButton)))
 			{
 				if (pointBoxColl(container[0])){
 					stack[currentLayer] = "tomatoes";
@@ -148,7 +200,7 @@ public class Main extends AbstractGame
 				{
 					currentLayer--;
 				}
-				System.out.println("current layer: "+currentLayer);
+				System.out.println("current layer: " + currentLayer);
 				System.out.println("stack[currentLayer]: " + stack[currentLayer]);
 				currentLayer++;
 			}
@@ -161,7 +213,9 @@ public class Main extends AbstractGame
 		if (Input.IsKeyReleased(KeyEvent.VK_Z) && currentLayer > 0)
 		{
 			currentLayer--;
+			stack[currentLayer] = "";
 			System.out.println(currentLayer);
+			System.out.println(stack[currentLayer]);
 		}
 		else if (Input.IsKeyReleased(KeyEvent.VK_Z) && currentLayer == 0)
 		{
@@ -203,6 +257,9 @@ public class Main extends AbstractGame
 			drawOrder(gfx, 8, 275);
 			
 			Draw.Rect(gfx, 30, 450, 940, 500, 5, red, 1f);
+			Draw.Text(gfx, "Remaining time: " + Integer.toString(seconds), 730, 50, instructionFont, white, 1f); //Displays remaining time in seconds
+			
+			Draw.Sprite(gfx, tomatoImg);
 			
 			for (int i = 0; i < 8; i++)
 			{
@@ -318,5 +375,17 @@ public class Main extends AbstractGame
 		subtotal = (subtotal / 10) * 100;
 		score = (int)subtotal;
 		System.out.println("score: " + score);
+	}
+	
+	private static void resetGame ()
+	{
+		timer = 100000;
+		seconds = 100;
+		currentLayer = 0;
+		updateTracker = 0;
+		for (int i = 0; i < 10; i++)
+		{
+			stack[i] = null;
+		}
 	}
 }
