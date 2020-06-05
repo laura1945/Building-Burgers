@@ -40,18 +40,6 @@ public class Main extends AbstractGame
 	private static Font menuFont = new Font("Impact", Font.BOLD, 120);
 	private static Font instructionFont = new Font("Impact", Font.PLAIN, 30);
 	private static Font orderFont = new Font("Lucida Handwriting", Font.PLAIN, 20);
-	
-	private static SpriteSheet tomatoImg;
-	private static SpriteSheet cheeseImg;
-	private static SpriteSheet lettuceImg;
-	private static SpriteSheet onionImg;
-	private static SpriteSheet pattyImg;
-	private static SpriteSheet baconImg;
-	private static SpriteSheet eggImg;
-	private static SpriteSheet bottomBunImg;
-	private static SpriteSheet topBunImg;
-	
-	private static int [] stackCoord = new int [] {350, 240};
  
 	private static Color screenColour = lightBlue;
 	private static String menuText = "Menu";
@@ -78,27 +66,6 @@ public class Main extends AbstractGame
 	@Override
 	public void LoadContent(GameContainer gc)
 	{
-		tomatoImg = new SpriteSheet(LoadImage.FromFile("/images/sprites/tomato.png")); 
-		cheeseImg = new SpriteSheet(LoadImage.FromFile("/images/sprites/cheese.png"));
-		lettuceImg = new SpriteSheet(LoadImage.FromFile("/images/sprites/lettuce.png"));
-		onionImg = new SpriteSheet(LoadImage.FromFile("/images/sprites/onion.png"));
-		pattyImg = new SpriteSheet(LoadImage.FromFile("/images/sprites/patty.png"));
-		baconImg = new SpriteSheet(LoadImage.FromFile("/images/sprites/bacon.png"));
-		eggImg = new SpriteSheet(LoadImage.FromFile("/images/sprites/egg.png"));
-		bottomBunImg = new SpriteSheet(LoadImage.FromFile("/images/sprites/bottomBun.png"));
-		topBunImg = new SpriteSheet(LoadImage.FromFile("/images/sprites/topBun.png"));
-		
-		tomatoImg.destRec = new Rectangle(stackCoord[0], stackCoord[1], (int)(gc.GetWidth() * 0.25), (int)(gc.GetHeight() * 0.25));
-		cheeseImg.destRec = new Rectangle(stackCoord[0], stackCoord[1], (int)(gc.GetWidth() * 0.25), (int)(gc.GetHeight() * 0.25));
-		lettuceImg.destRec = new Rectangle(stackCoord[0], stackCoord[1], (int)(gc.GetWidth() * 0.25), (int)(gc.GetHeight() * 0.25));
-		onionImg.destRec = new Rectangle(stackCoord[0], stackCoord[1], (int)(gc.GetWidth() * 0.25), (int)(gc.GetHeight() * 0.25));
-		pattyImg.destRec = new Rectangle(stackCoord[0], stackCoord[1], (int)(gc.GetWidth() * 0.25), (int)(gc.GetHeight() * 0.25));
-		baconImg.destRec = new Rectangle(stackCoord[0], stackCoord[1], (int)(gc.GetWidth() * 0.25), (int)(gc.GetHeight() * 0.25));
-		eggImg.destRec = new Rectangle(stackCoord[0], stackCoord[1], (int)(gc.GetWidth() * 0.25), (int)(gc.GetHeight() * 0.25));
-		bottomBunImg.destRec = new Rectangle(stackCoord[0], stackCoord[1], (int)(gc.GetWidth() * 0.25), (int)(gc.GetHeight() * 0.25));
-		topBunImg.destRec = new Rectangle(stackCoord[0], stackCoord[1], (int)(gc.GetWidth() * 0.25), (int)(gc.GetHeight() * 0.25));
-		
-		
 		//System.out.println("\n\norderTicketIngr: " + orderTicketIngr[0] + " " + orderTicketIngr[1] + " " + orderTicketIngr[2] + " " + orderTicketIngr[3] + " " + orderTicketIngr[4] + " " + orderTicketIngr[5] + " " + orderTicketIngr[6] + " " + orderTicketIngr[7]);
 		orderTicketIngr[0] = "bun";
 		orderTicketIngr[9] = "bun";
@@ -185,7 +152,7 @@ public class Main extends AbstractGame
 					stack[currentLayer] = "onions";
 				}
 				else if (pointBoxColl(container[4])){
-					stack[currentLayer] = "beef patty";
+					stack[currentLayer] = "patty";
 				}
 				else if (pointBoxColl(container[5])){
 					stack[currentLayer] = "bacon";
@@ -213,7 +180,7 @@ public class Main extends AbstractGame
 		if (Input.IsKeyReleased(KeyEvent.VK_Z) && currentLayer > 0)
 		{
 			currentLayer--;
-			stack[currentLayer] = "";
+			stack[currentLayer] = null;
 			System.out.println(currentLayer);
 			System.out.println(stack[currentLayer]);
 		}
@@ -259,7 +226,36 @@ public class Main extends AbstractGame
 			Draw.Rect(gfx, 30, 450, 940, 500, 5, red, 1f);
 			Draw.Text(gfx, "Remaining time: " + Integer.toString(seconds), 730, 50, instructionFont, white, 1f); //Displays remaining time in seconds
 			
-			Draw.Sprite(gfx, tomatoImg);
+			boolean hasBottomBun = false; //checks if burger has a bottom bun
+			//Draws stack 
+			for (int i = 0; i < stack.length; i++)
+			{
+				if (stack[i] != null) //checks if stack with element i is not empty
+				{
+					String path = null;
+					if (stack[i] == "bun") 
+					{
+						if (hasBottomBun == true){ //if there is a bottomBun
+							path = "/images/sprites/topBun.png";
+						}
+						else{ //if there isn't a bottomBun
+							path = "/images/sprites/bottomBun.png";
+							hasBottomBun = true;							
+						}
+					}
+					else
+					{
+						path = "/images/sprites/" + stack[i] + ".png"; //Loads every ingredient except for topBun and bottomBun from path
+					}
+					
+					int y = 270 - 30*i; //subtracts 30 from y coordinate of ingredient each time
+					
+					SpriteSheet stackSlot = new SpriteSheet(LoadImage.FromFile(path)); //Loads the required ingredient to be drawn (path)
+					stackSlot.destRec = new Rectangle(380, y, (int)(gc.GetWidth() * 0.2), (int)(gc.GetHeight() * 0.2)); //Defines bounding box
+					Draw.Sprite(gfx, stackSlot); //Draws ingredient 
+				}
+				
+			}
 			
 			for (int i = 0; i < 8; i++)
 			{
@@ -305,7 +301,7 @@ public class Main extends AbstractGame
 			}
 			else if (ingredientNum == 5)
 			{
-				orderTicketIngr[i] = "beef patty";
+				orderTicketIngr[i] = "patty";
 			}
 			else if (ingredientNum == 6)
 			{
