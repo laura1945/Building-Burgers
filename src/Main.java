@@ -28,6 +28,7 @@ public class Main extends AbstractGame
 	private static Color white = Helper.WHITE;
 	private static Color black = Helper.BLACK;
 	private static Color red = Helper.RED;
+	private static Color grey = Helper.GRAY;
 	private static Color lightBlue = Helper.GetColor(135, 212, 245);
 	private static Color darkRed = Helper.GetColor(183, 22, 22);
 	private static Color green = Helper.GetColor(103, 238, 70);
@@ -52,7 +53,7 @@ public class Main extends AbstractGame
 	private static String [] orderTicketIngr = new String[10];
 	private static String [] stack = new String[10];
 	private static int currentLayer = 0;
-	private static SpriteSheet [] buttonImgs = new SpriteSheet[8];
+	private static SpriteSheet [] buttonImgs = new SpriteSheet[8]; //stores sprite sheets for the ingredient images of 8 buttons
 	
 	private static int score = 0;
 	private static float timer = 100000; //The time in milliseconds
@@ -81,13 +82,14 @@ public class Main extends AbstractGame
 		container [7] = new GameRectangle(738, 708, 216, 228, 5, red, black, 1f);
 		
 		String [] containerIngr = new String [] {"tomatoes", "cheese", "lettuce", "onions", "patty", "bacon", "egg", "bun"};
-		int x = 55;
-		int y = 465;
+		int x = 55; //starting x coordinate
+		int y = 465; //starting y coordinate
+		//Loops through buttonImgs and draws each containerIngr
 		for (int i = 0; i < buttonImgs.length; i++)
 		{
 			String containerPath = null;		
 			
-			if (containerIngr[i] == "patty"){
+			if (containerIngr[i] == "patty"){ //Adjusts coordinates for next row
 				x = 55;
 				y = 708;
 			}
@@ -97,28 +99,33 @@ public class Main extends AbstractGame
 			buttonImgs[i].destRec = new Rectangle(x, y, (int)(gc.GetWidth() * 0.2), (int)(gc.GetHeight() * 0.2)); //Defines bounding box
 			
 			int xDistance = 231;
-			x = x + xDistance;
+			x = x + xDistance; //Updates x coordinate
 		}
 	}
 	
 	@Override
 	public void Update(GameContainer gc, float deltaTime) 
 	{
-		if (Input.IsKeyReleased(KeyEvent.VK_I) && alive == false)
+		if (Input.IsKeyReleased(KeyEvent.VK_F) && alive == false)
 		{
 			screenColour = darkRed;
 			menuText = "Instructions";
 		}
-		else if (Input.IsKeyReleased(KeyEvent.VK_G))
+		else if (Input.IsKeyReleased(KeyEvent.VK_D) && alive == false)
 		{
-			menuText = "Game Play";
-			screenColour = black;
-			alive = true;
+			menuText = "Menu";
+			screenColour = lightBlue;
 		}
 		else if (Input.IsKeyReleased(KeyEvent.VK_SPACE)&& alive == false)
 		{
-			screenColour = lightBlue;
-			menuText = "Menu";
+			screenColour = black;
+			menuText = "Game Play";
+			alive = true;
+		}
+		else if (Input.IsKeyReleased(KeyEvent.VK_S)&& alive == false)
+		{
+			screenColour = grey;
+			menuText = "Settings";
 		}
 		
 		//Generates ingredients when user starts game
@@ -220,9 +227,10 @@ public class Main extends AbstractGame
 		{
 			Draw.Text(gfx, menuText, 340, 520, menuFont, white, 1f);
 			
-			Draw.Text(gfx, "Press I for instructions", 333, 700, instructionFont, white, 1f);
-			Draw.Text(gfx, "Press G for game play", 345, 750, instructionFont, white, 1f);
-			Draw.Text(gfx, "Press space bar to return to menu", 270, 800, instructionFont, white, 1f);
+			Draw.Text(gfx, "Press F for instructions", 340, 700, instructionFont, white, 1f);
+			Draw.Text(gfx, "Press space bar for game play", 300, 750, instructionFont, white, 1f);
+			Draw.Text(gfx, "Press S for game settings", 330, 800, instructionFont, white, 1f);
+			Draw.Text(gfx, "Press D to return to menu", 333, 850, instructionFont, white, 1f);
 		}
 		else if (menuText == "Instructions")
 		{
@@ -230,6 +238,10 @@ public class Main extends AbstractGame
 			Draw.Text(gfx, "", 340, 520, menuFont, white, 1f);
 			
 			Draw.Text(gfx, "Are you ready to take on the challenge?", 200, 400, instructionFont, white, 1f);
+		}
+		else if (menuText == "Settings")
+		{
+			Draw.Text(gfx, menuText, 250, 200, menuFont, white, 1f);
 		}
 		else if (menuText == "Game Play")
 		{
@@ -279,9 +291,10 @@ public class Main extends AbstractGame
 				
 			}
 			
+			//Draws ingredient images for the buttons
 			for (int i = 0; i < buttonImgs.length; i++)
 			{
-				Draw.Sprite(gfx, buttonImgs[i]); //Draws ingredient 
+				Draw.Sprite(gfx, buttonImgs[i]); 
 			}
 			
 			for (int i = 0; i < 8; i++)
