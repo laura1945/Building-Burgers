@@ -39,6 +39,7 @@ public class Main extends AbstractGame
 	//private static boolean scoreScreen = false;
 	
 	private static Font menuFont = new Font("Impact", Font.BOLD, 120);
+	private static Font subtitleFont = new Font("Impact", Font.PLAIN, 50);
 	private static Font instructionFont = new Font("Impact", Font.PLAIN, 30);
 	private static Font orderFont = new Font("Lucida Handwriting", Font.PLAIN, 20);
  
@@ -108,8 +109,8 @@ public class Main extends AbstractGame
 	{
 		if (Input.IsKeyReleased(KeyEvent.VK_F) && alive == false)
 		{
-			screenColour = darkRed;
-			menuText = "Instructions";
+			menuText = "Manual";
+			screenColour = darkRed;		
 		}
 		else if (Input.IsKeyReleased(KeyEvent.VK_D) && alive == false)
 		{
@@ -118,14 +119,14 @@ public class Main extends AbstractGame
 		}
 		else if (Input.IsKeyReleased(KeyEvent.VK_SPACE)&& alive == false)
 		{
-			screenColour = black;
 			menuText = "Game Play";
+			screenColour = black;
 			alive = true;
 		}
 		else if (Input.IsKeyReleased(KeyEvent.VK_S)&& alive == false)
 		{
-			screenColour = grey;
 			menuText = "Settings";
+			screenColour = grey;
 		}
 		
 		//Generates ingredients when user starts game
@@ -225,90 +226,23 @@ public class Main extends AbstractGame
 		
 		if (menuText == "Menu")
 		{
-			Draw.Text(gfx, menuText, 340, 520, menuFont, white, 1f);
-			
-			Draw.Text(gfx, "Press F for instructions", 340, 700, instructionFont, white, 1f);
-			Draw.Text(gfx, "Press space bar for game play", 300, 750, instructionFont, white, 1f);
-			Draw.Text(gfx, "Press S for game settings", 330, 800, instructionFont, white, 1f);
-			Draw.Text(gfx, "Press D to return to menu", 333, 850, instructionFont, white, 1f);
+			drawMenuScr(gfx);
 		}
-		else if (menuText == "Instructions")
+		else if (menuText == "Manual")
 		{
-			Draw.Text(gfx, menuText, 150, 200, menuFont, white, 1f);
-			Draw.Text(gfx, "", 340, 520, menuFont, white, 1f);
-			
-			Draw.Text(gfx, "Are you ready to take on the challenge?", 200, 400, instructionFont, white, 1f);
+			drawManualScr(gfx);
 		}
 		else if (menuText == "Settings")
 		{
-			Draw.Text(gfx, menuText, 250, 200, menuFont, white, 1f);
+			drawSettingsScr(gfx);
 		}
 		else if (menuText == "Game Play")
 		{
-			finishButton.Draw(gfx);
-			Draw.Text(gfx, "FINISH", 860, 360, instructionFont, white, 1f);
-			
-			drawOrder(gfx, 1, 100);
-			drawOrder(gfx, 2, 125);
-			drawOrder(gfx, 3, 150);
-			drawOrder(gfx, 4, 175);
-			drawOrder(gfx, 5, 200);
-			drawOrder(gfx, 6, 225);
-			drawOrder(gfx, 7, 250);
-			drawOrder(gfx, 8, 275);
-			
-			Draw.Rect(gfx, 30, 450, 940, 500, 5, red, 1f);
-			Draw.Text(gfx, "Remaining time: " + Integer.toString(seconds), 730, 50, instructionFont, white, 1f); //Displays remaining time in seconds
-			
-			boolean hasBottomBun = false; //checks if burger has a bottom bun
-			//Draws stack 
-			for (int i = 0; i < stack.length; i++)
-			{
-				if (stack[i] != null) //checks if stack with element i is not empty
-				{
-					String path = null;
-					if (stack[i] == "bun") 
-					{
-						if (hasBottomBun == true){ //if there is a bottomBun
-							path = "/images/sprites/topBun.png";
-						}
-						else{ //if there isn't a bottomBun
-							path = "/images/sprites/bottomBun.png";
-							hasBottomBun = true;							
-						}
-					}
-					else
-					{
-						path = "/images/sprites/" + stack[i] + ".png"; //Loads every ingredient except for topBun and bottomBun from path
-					}
-					
-					int y = 270 - 30*i; //subtracts 30 from y coordinate of ingredient each time
-					
-					SpriteSheet stackSlot = new SpriteSheet(LoadImage.FromFile(path)); //Loads the required ingredient to be drawn (path)
-					stackSlot.destRec = new Rectangle(380, y, (int)(gc.GetWidth() * 0.2), (int)(gc.GetHeight() * 0.2)); //Defines bounding box
-					Draw.Sprite(gfx, stackSlot); //Draws ingredient 
-				}
-				
-			}
-			
-			//Draws ingredient images for the buttons
-			for (int i = 0; i < buttonImgs.length; i++)
-			{
-				Draw.Sprite(gfx, buttonImgs[i]); 
-			}
-			
-			for (int i = 0; i < 8; i++)
-			{
-				GameRectangle rec = container[i];
-				drawRecLine(rec, gfx);
-			}
-			
+			drawGameScr(gfx, gc);
 		}
 		else if (menuText == "Score Screen")
 		{
-			Draw.Text(gfx, "Score", 150, 200, menuFont, white, 1f);
-			Draw.Text(gfx, "Your score:", 150, 450, instructionFont, white, 1f);
-			Draw.Text(gfx, Integer.toString(score), 300, 450, menuFont, white, 1f);
+			drawScoreScr(gfx);
 		}
 	}
 	
@@ -379,6 +313,96 @@ public class Main extends AbstractGame
 		float width = rec.GetRight() - rec.GetLeft();
 		Draw.Rect(gfx, rec.GetLeft(), rec.GetTop(), width, height, rec.GetBorderWidth(), rec.GetBorderColor(), rec.GetTransparency());
 		
+	}
+	
+	private static void drawMenuScr (Graphics2D gfx)
+	{
+		Draw.Text(gfx, menuText, 340, 520, menuFont, white, 1f);
+		
+		Draw.Text(gfx, "Press F for instructions", 340, 700, instructionFont, white, 1f);
+		Draw.Text(gfx, "Press space bar for game play", 300, 750, instructionFont, white, 1f);
+		Draw.Text(gfx, "Press S for game settings", 330, 800, instructionFont, white, 1f);
+		Draw.Text(gfx, "Press D to return to menu", 333, 850, instructionFont, white, 1f);
+	}
+	
+	private static void drawManualScr (Graphics2D gfx)
+	{
+		Draw.Text(gfx, menuText, 300, 200, menuFont, white, 1f);
+		Draw.Text(gfx, "", 340, 520, menuFont, white, 1f);
+		Draw.Text(gfx, "Press W for the backstory", 340, 450, instructionFont, white, 1f);
+		Draw.Text(gfx, "Press E for instructions on how to play", 265, 500, instructionFont, white, 1f);
+	}
+	
+	private static void drawSettingsScr (Graphics2D gfx)
+	{
+		Draw.Text(gfx, menuText, 250, 200, menuFont, white, 1f);
+	}
+	
+	private static void drawGameScr (Graphics2D gfx, GameContainer gc)
+	{
+		finishButton.Draw(gfx);
+		Draw.Text(gfx, "FINISH", 860, 360, instructionFont, white, 1f);
+		
+		drawOrder(gfx, 1, 100);
+		drawOrder(gfx, 2, 125);
+		drawOrder(gfx, 3, 150);
+		drawOrder(gfx, 4, 175);
+		drawOrder(gfx, 5, 200);
+		drawOrder(gfx, 6, 225);
+		drawOrder(gfx, 7, 250);
+		drawOrder(gfx, 8, 275);
+		
+		Draw.Rect(gfx, 30, 450, 940, 500, 5, red, 1f);
+		Draw.Text(gfx, "Remaining time: " + Integer.toString(seconds), 730, 50, instructionFont, white, 1f); //Displays remaining time in seconds
+		
+		boolean hasBottomBun = false; //checks if burger has a bottom bun
+		//Draws stack 
+		for (int i = 0; i < stack.length; i++)
+		{
+			if (stack[i] != null) //checks if stack with element i is not empty
+			{
+				String path = null;
+				if (stack[i] == "bun") 
+				{
+					if (hasBottomBun == true){ //if there is a bottomBun
+						path = "/images/sprites/topBun.png";
+					}
+					else{ //if there isn't a bottomBun
+						path = "/images/sprites/bottomBun.png";
+						hasBottomBun = true;							
+					}
+				}
+				else
+				{
+					path = "/images/sprites/" + stack[i] + ".png"; //Loads every ingredient except for topBun and bottomBun from path
+				}
+				
+				int y = 270 - 30*i; //subtracts 30 from y coordinate of ingredient each time
+				
+				SpriteSheet stackSlot = new SpriteSheet(LoadImage.FromFile(path)); //Loads the required ingredient to be drawn (path)
+				stackSlot.destRec = new Rectangle(380, y, (int)(gc.GetWidth() * 0.2), (int)(gc.GetHeight() * 0.2)); //Defines bounding box
+				Draw.Sprite(gfx, stackSlot); //Draws ingredient 
+			}
+		}
+		
+		//Draws ingredient images for the buttons
+		for (int i = 0; i < buttonImgs.length; i++)
+		{
+			Draw.Sprite(gfx, buttonImgs[i]); 
+		}
+		
+		for (int i = 0; i < 8; i++)
+		{
+			GameRectangle rec = container[i];
+			drawRecLine(rec, gfx);
+		}
+	}
+	
+	private static void drawScoreScr (Graphics2D gfx)
+	{
+		Draw.Text(gfx, "Score", 150, 200, menuFont, white, 1f);
+		Draw.Text(gfx, "Your score:", 150, 450, instructionFont, white, 1f);
+		Draw.Text(gfx, Integer.toString(score), 300, 450, menuFont, white, 1f);
 	}
 	
 	private static boolean pointCircleColl (GameCircle circle)
