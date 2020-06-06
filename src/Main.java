@@ -206,6 +206,7 @@ public class Main extends AbstractGame
 		else if (menuText == "Instructions")
 		{
 			Draw.Text(gfx, menuText, 150, 200, menuFont, white, 1f);
+			Draw.Text(gfx, "", 340, 520, menuFont, white, 1f);
 			
 			Draw.Text(gfx, "Are you ready to take on the challenge?", 200, 400, instructionFont, white, 1f);
 		}
@@ -255,6 +256,26 @@ public class Main extends AbstractGame
 					Draw.Sprite(gfx, stackSlot); //Draws ingredient 
 				}
 				
+			}
+			
+			String [] containerIngr = new String [] {"tomatoes", "cheese", "lettuce", "onions", "patty", "bacon", "egg", "bun"};
+			int x = 55;
+			int y = 465;
+			for (int i = 0; i < 8; i++)
+			{
+				String containerPath = null;		
+				
+				if (containerIngr[i] == "patty"){
+					x = 55;
+					y = 708;
+				}
+				
+				containerPath = "/images/sprites/" + containerIngr[i] + ".png";
+				SpriteSheet containerSlot = new SpriteSheet(LoadImage.FromFile("/images/sprites/bottomBun.png")); //Loads the required ingredient to be drawn (path)
+				//containerSlot.destRec = new Rectangle(x, y, (int)(gc.GetWidth() * 0.2), (int)(gc.GetHeight() * 0.2)); //Defines bounding box
+				//Draw.Sprite(gfx, containerSlot); //Draws ingredient 
+				int xDistance = 231;
+				x = x + xDistance;
 			}
 			
 			for (int i = 0; i < 8; i++)
