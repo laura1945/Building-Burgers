@@ -52,6 +52,7 @@ public class Main extends AbstractGame
 	private static String [] orderTicketIngr = new String[10];
 	private static String [] stack = new String[10];
 	private static int currentLayer = 0;
+	private static SpriteSheet [] buttonImgs = new SpriteSheet[8];
 	
 	private static int score = 0;
 	private static float timer = 100000; //The time in milliseconds
@@ -78,6 +79,26 @@ public class Main extends AbstractGame
 		container [5] = new GameRectangle(276, 708, 216, 228, 5, white, black, 1f);
 		container [6] = new GameRectangle(507, 708, 216, 228, 5, white, black, 1f);
 		container [7] = new GameRectangle(738, 708, 216, 228, 5, red, black, 1f);
+		
+		String [] containerIngr = new String [] {"tomatoes", "cheese", "lettuce", "onions", "patty", "bacon", "egg", "bun"};
+		int x = 55;
+		int y = 465;
+		for (int i = 0; i < buttonImgs.length; i++)
+		{
+			String containerPath = null;		
+			
+			if (containerIngr[i] == "patty"){
+				x = 55;
+				y = 708;
+			}
+			
+			containerPath = "/images/sprites/" + containerIngr[i] + ".png";
+			buttonImgs[i] = new SpriteSheet(LoadImage.FromFile("/images/sprites/" + containerIngr[i] + ".png")); //Loads the required ingredient to be drawn (path)
+			buttonImgs[i].destRec = new Rectangle(x, y, (int)(gc.GetWidth() * 0.2), (int)(gc.GetHeight() * 0.2)); //Defines bounding box
+			
+			int xDistance = 231;
+			x = x + xDistance;
+		}
 	}
 	
 	@Override
@@ -258,24 +279,9 @@ public class Main extends AbstractGame
 				
 			}
 			
-			String [] containerIngr = new String [] {"tomatoes", "cheese", "lettuce", "onions", "patty", "bacon", "egg", "bun"};
-			int x = 55;
-			int y = 465;
-			for (int i = 0; i < 8; i++)
+			for (int i = 0; i < buttonImgs.length; i++)
 			{
-				String containerPath = null;		
-				
-				if (containerIngr[i] == "patty"){
-					x = 55;
-					y = 708;
-				}
-				
-				containerPath = "/images/sprites/" + containerIngr[i] + ".png";
-				SpriteSheet containerSlot = new SpriteSheet(LoadImage.FromFile("/images/sprites/bottomBun.png")); //Loads the required ingredient to be drawn (path)
-				//containerSlot.destRec = new Rectangle(x, y, (int)(gc.GetWidth() * 0.2), (int)(gc.GetHeight() * 0.2)); //Defines bounding box
-				//Draw.Sprite(gfx, containerSlot); //Draws ingredient 
-				int xDistance = 231;
-				x = x + xDistance;
+				Draw.Sprite(gfx, buttonImgs[i]); //Draws ingredient 
 			}
 			
 			for (int i = 0; i < 8; i++)
