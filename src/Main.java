@@ -57,7 +57,6 @@ public class Main extends AbstractGame
 	private static Vector2F mousePos = Input.GetMousePos();
 	
 	private static boolean alive;
-	private static int updateTracker = 0;
 	
 	private static String [] orderTicketIngr = new String[10];
 	private static String [] stack = new String[10];
@@ -116,153 +115,173 @@ public class Main extends AbstractGame
 	@Override
 	public void Update(GameContainer gc, float deltaTime) 
 	{
-		if (Input.IsKeyReleased(KeyEvent.VK_F) && alive == false)
+		if (menuText == "Game Play")
 		{
-			menuText = "Manual";
-			screenColour = darkRed;		
-		}
-		else if (Input.IsKeyReleased(KeyEvent.VK_W) && (menuText == "Manual" || menuText == "Instructions") && alive == false)
-		{
-			menuText = "Backstory";
-			screenColour = darkBlue;
-		}
-		else if (Input.IsKeyReleased(KeyEvent.VK_E) && (menuText == "Manual" || menuText == "Backstory") && alive == false)
-		{
-			menuText = "Instructions";
-			screenColour = black;
-		}
-		else if (Input.IsKeyReleased(KeyEvent.VK_D) && alive == false)
-		{
-			menuText = "Menu";
-			screenColour = lightBlue;
-		}
-		else if (Input.IsKeyReleased(KeyEvent.VK_SPACE)&& alive == false)
-		{
-			menuText = "Game Play";
-			screenColour = black;
-			alive = true;
-			
-			if (backMusic == true){
-				backgrMusic.Play();
-			}
-		}
-		else if (Input.IsKeyReleased(KeyEvent.VK_S)&& alive == false)
-		{
-			menuText = "Settings";
-			screenColour = grey;
-			if (pointBoxColl(backMusicButton) == true && backMusic == true){
-				backMusic = false;
-				System.out.println("false");
-			}
-			else if (pointBoxColl(backMusicButton) == true && backMusic == false){
-				backMusic = true;
-				System.out.println("true");
-			}
-		}
-		
-		if (menuText == "Settings")
-		{
-			
-		}
-		
-		//Generates ingredients when user starts game
-		if (alive == true && updateTracker == 0)
-		{
-			genIngredients();
-			updateTracker = 1;
-		}
-		
-		if (seconds > 0 && alive == true) //Checks if seconds is more than 0
-		{
-			timer = timer - deltaTime; //Calculates the time in milliseconds
-			seconds = Math.round(timer/1000); //Converts the time in milliseconds to seconds
-		}
-		
-		if (seconds == 0 && updateTracker == 1)
-		{
-			menuText = "Score Screen";
-			screenColour = purple;
-			backgrMusic.Stop();
-			alive = false;
-			
-			calcScore();
-			resetGame();
-		}
-		
-		//Checks mouse click position
-		if (alive == true && Input.IsMouseButtonReleased(Input.MOUSE_LEFT))
-		{
-			
-			if (pointCircleColl(finishButton) || seconds == 0)
+			if (seconds > 0) //Checks if seconds is more than 0
 			{
-				menuText = "Score Screen";
-				screenColour = purple;
-				backgrMusic.Stop();
-				alive = false;
-				
-				calcScore();
-				resetGame();
+				timer = timer - deltaTime; //Calculates the time in milliseconds
+				seconds = Math.round(timer/1000); //Converts the time in milliseconds to seconds
 			}
 			
-			if (currentLayer < 10)
+			if (seconds == 0)
 			{
-				if (pointBoxColl(container[0])){
-					stack[currentLayer] = "tomatoes";
-					addIngrSnd.Play();
-				}
-				else if (pointBoxColl(container[1])){
-					stack[currentLayer] = "cheese";
-					addIngrSnd.Play();
-				}
-				else if (pointBoxColl(container[2])){
-					stack[currentLayer] = "lettuce";
-					addIngrSnd.Play();
-				}
-				else if (pointBoxColl(container[3])){
-					stack[currentLayer] = "onions";
-					addIngrSnd.Play();
-				}
-				else if (pointBoxColl(container[4])){
-					stack[currentLayer] = "patty";
-					addIngrSnd.Play();
-				}
-				else if (pointBoxColl(container[5])){
-					stack[currentLayer] = "bacon";
-					addIngrSnd.Play();
-				}
-				else if (pointBoxColl(container[6])){
-					stack[currentLayer] = "egg";
-					addIngrSnd.Play();
-				}
-				else if (pointBoxColl(container[7])){
-					stack[currentLayer] = "bun";
-					addIngrSnd.Play();
-				}
-				else 
+				endGame();
+			}
+			
+			//Checks mouse click position
+			if (Input.IsMouseButtonReleased(Input.MOUSE_LEFT))
+			{
+				if (pointCircleColl(finishButton))
 				{
-					currentLayer--;
+					endGame();
 				}
-				//System.out.println("current layer: " + currentLayer);
-				//System.out.println("stack[currentLayer]: " + stack[currentLayer]);
-				currentLayer++;
+				
+				if (currentLayer < 10)
+				{
+					if (pointBoxColl(container[0])){
+						stack[currentLayer] = "tomatoes";
+						addIngrSnd.Play();
+					}
+					else if (pointBoxColl(container[1])){
+						stack[currentLayer] = "cheese";
+						addIngrSnd.Play();
+					}
+					else if (pointBoxColl(container[2])){
+						stack[currentLayer] = "lettuce";
+						addIngrSnd.Play();
+					}
+					else if (pointBoxColl(container[3])){
+						stack[currentLayer] = "onions";
+						addIngrSnd.Play();
+					}
+					else if (pointBoxColl(container[4])){
+						stack[currentLayer] = "patty";
+						addIngrSnd.Play();
+					}
+					else if (pointBoxColl(container[5])){
+						stack[currentLayer] = "bacon";
+						addIngrSnd.Play();
+					}
+					else if (pointBoxColl(container[6])){
+						stack[currentLayer] = "egg";
+						addIngrSnd.Play();
+					}
+					else if (pointBoxColl(container[7])){
+						stack[currentLayer] = "bun";
+						addIngrSnd.Play();
+					}
+					else 
+					{
+						currentLayer--;
+					}
+					//System.out.println("current layer: " + currentLayer);
+					//System.out.println("stack[currentLayer]: " + stack[currentLayer]);
+					currentLayer++;
+				}
+				else if (currentLayer >= 10) //ADD TO DRAW
+				{
+					System.out.println("You can not stack more ingredients");
+				}
 			}
-			else if (currentLayer >= 10 && alive == true) 
+			
+			if (Input.IsKeyReleased(KeyEvent.VK_Z) && currentLayer > 0)
 			{
-				System.out.println("You can not stack more ingredients");
+				currentLayer--;
+				stack[currentLayer] = null;
+				System.out.println(currentLayer);
+				System.out.println(stack[currentLayer]);
+				undoSnd.Play();
+			}
+			else if (Input.IsKeyReleased(KeyEvent.VK_Z) && currentLayer == 0)
+			{
+				cannotUndoSnd.Play();
 			}
 		}
-		
-		if (Input.IsKeyReleased(KeyEvent.VK_Z) && currentLayer > 0)
+		else //if the state is not Game Play
 		{
-			currentLayer--;
-			stack[currentLayer] = null;
-			System.out.println(currentLayer);
-			System.out.println(stack[currentLayer]);
-			undoSnd.Play();
-		}
-		else if (Input.IsKeyReleased(KeyEvent.VK_Z) && currentLayer == 0)
-		{
-			cannotUndoSnd.Play();
+			if (Input.IsKeyReleased(KeyEvent.VK_D))
+			{
+				menuText = "Menu";
+				screenColour = lightBlue;
+			}
+			
+			if (menuText == "Menu")
+			{
+				if (Input.IsKeyReleased(KeyEvent.VK_F))
+				{
+					menuText = "Manual";	
+					screenColour = darkRed;
+				}
+				else if (Input.IsKeyReleased(KeyEvent.VK_SPACE))
+				{
+					pressedSpace();
+				}
+				else if (Input.IsKeyReleased(KeyEvent.VK_S))
+				{
+					menuText = "Settings";
+					screenColour = grey;
+				}
+			}
+			else if (menuText == "Manual")
+			{
+				if (Input.IsKeyReleased(KeyEvent.VK_W))
+				{
+					menuText = "Backstory";
+					screenColour = darkBlue;
+				}
+				else if (Input.IsKeyReleased(KeyEvent.VK_E))
+				{
+					menuText = "Instructions";
+					screenColour = black;
+				}
+			}
+			else if (menuText == "Backstory")
+			{
+				if (Input.IsKeyReleased(KeyEvent.VK_E))
+				{
+					menuText = "Instructions";
+					screenColour = black;
+				}
+				else if (Input.IsKeyReleased(KeyEvent.VK_F))
+				{
+					menuText = "Manual";	
+					screenColour = darkRed;
+				}
+			}
+			else if (menuText == "Instructions")
+			{
+				if (Input.IsKeyReleased(KeyEvent.VK_F))
+				{
+					menuText = "Manual";	
+					screenColour = darkRed;
+				}
+				else if (Input.IsKeyReleased(KeyEvent.VK_W))
+				{
+					menuText = "Backstory";
+					screenColour = darkBlue;
+				}
+			}
+			else if (menuText == "Settings")
+			{
+				if (Input.IsMouseButtonReleased(Input.MOUSE_LEFT))
+				{
+					if (pointBoxColl(backMusicButton) == true && backMusic == true){
+						backMusic = false;
+						System.out.println("false");
+					}
+					else if (pointBoxColl(backMusicButton) == true && backMusic == false){
+						backMusic = true;
+						System.out.println("true");
+					}
+				}
+			}
+			else if (menuText == "Score Screen")
+			{
+				if (Input.IsKeyReleased(KeyEvent.VK_SPACE))
+				{
+					pressedSpace();
+				}
+			}
 		}
 	}
 
@@ -556,12 +575,34 @@ public class Main extends AbstractGame
 		System.out.println("score: " + score);
 	}
 	
+	private static void endGame()
+	{
+		menuText = "Score Screen";
+		screenColour = purple;
+		alive = false;
+		backgrMusic.Stop();
+		
+		calcScore();
+		resetGame();
+	}
+	
+	private static void pressedSpace()
+	{
+		menuText = "Game Play";
+		genIngredients();
+		screenColour = black;
+		alive = true;
+		
+		if (backMusic == true){
+			backgrMusic.Play();
+		}
+	}
+	
 	private static void resetGame ()
 	{
 		timer = 16000;
 		seconds = 16;
 		currentLayer = 0;
-		updateTracker = 0;
 		for (int i = 0; i < 10; i++)
 		{
 			stack[i] = null;
