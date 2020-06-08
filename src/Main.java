@@ -30,26 +30,33 @@ public class Main extends AbstractGame
 	private static Color red = Helper.RED;
 	private static Color grey = Helper.GRAY;
 	private static Color lightBlue = Helper.GetColor(135, 212, 245);
-	private static Color darkBlue = Helper.GetColor(11, 70, 146);
-	private static Color darkRed = Helper.GetColor(183, 22, 22);
+	private static Color darkPurple = Helper.GetColor(76, 26, 127);
 	private static Color green = Helper.GetColor(103, 238, 70);
 	private static Color purple = Helper.GetColor(153, 51, 255);
+	private static Color peach = Helper.GetColor(245, 194, 128);
 	
 	static SoundClip backgrMusic = new SoundClip("/sounds/music/jazz.mp3", true);
 	SoundClip addIngrSnd = new SoundClip("/sounds/effects/whoosh.wav", true); 
-	SoundClip undoSnd = new SoundClip("/sounds/effects/beep.wav", true);
+	SoundClip undoSnd = new SoundClip("/sounds/effects/waterDrop.wav", true);
 	SoundClip cannotUndoSnd = new SoundClip("/sounds/effects/click_x.wav", true);
+	static SoundClip score0to20Snd = new SoundClip("/sounds/effects/crying.wav", true);
+	static SoundClip score80PlusSnd = new SoundClip("/sounds/effects/applause.wav", true);
+	static SoundClip score100Snd = new SoundClip("/sounds/effects/trumpet.wav", true);
 	static boolean backMusic = true;
+	static boolean soundEffects = true;
 	
 	private static GameRectangle [] container = new GameRectangle [8];
 	private static GameCircle finishButton = new GameCircle (900, 350, 75, 5, red, red, 1f);
 	private static GameRectangle backMusicButton = new GameRectangle (630, 375, 50, 25, 3, white, 1f);
+	private static GameRectangle soundEffButton = new GameRectangle (630, 455, 50, 25, 3, white, 1f);
 	
 	private static Font menuFont = new Font("Impact", Font.BOLD, 120);
 	private static Font smallInstrFont = new Font("Bookman Old Style", Font.PLAIN, 25);
 	private static Font instructionFont = new Font("Impact", Font.PLAIN, 30);
-	private static Font returnToMenuFont = new Font("Times New Roman", Font.BOLD, 20);
+	private static Font navigationFont = new Font("Times New Roman", Font.BOLD, 20);
 	private static Font orderFont = new Font("Lucida Handwriting", Font.PLAIN, 20);
+	private static Font cantAddMoreFont = new Font("Impact", Font.PLAIN, 20);
+	private static String cantAddMore = "";
  
 	private static Color screenColour = lightBlue;
 	private static String menuText = "Menu";
@@ -62,11 +69,14 @@ public class Main extends AbstractGame
 	private static String [] stack = new String[10];
 	private static int currentLayer = 0;
 	private static SpriteSheet [] buttonImgs = new SpriteSheet[8]; //stores sprite sheets for the ingredient images of 8 buttons
+	private static SpriteSheet [] stackImgs = new SpriteSheet[10];
+	private static SpriteSheet [] ingredientImgs = new SpriteSheet[9];
+	private static boolean hasBottomBun = false; //checks if burger has a bottom bun
 	private static SpriteSheet fullGameSS = new SpriteSheet(LoadImage.FromFile("/images/sprites/fullGameSS.png")); 
 	
 	private static int score = 0;
-	private static float timer = 16000; //The time in milliseconds
-	private static Integer seconds = 16; //The time in seconds
+	private static float timer = 160000; //The time in milliseconds
+	private static Integer seconds = 160; //The time in seconds
 	
 	public static void main(String[] args) 
 	{
@@ -80,6 +90,16 @@ public class Main extends AbstractGame
 		//System.out.println("\n\norderTicketIngr: " + orderTicketIngr[0] + " " + orderTicketIngr[1] + " " + orderTicketIngr[2] + " " + orderTicketIngr[3] + " " + orderTicketIngr[4] + " " + orderTicketIngr[5] + " " + orderTicketIngr[6] + " " + orderTicketIngr[7]);
 		orderTicketIngr[0] = "bun";
 		orderTicketIngr[9] = "bun";
+		
+		ingredientImgs[0] = new SpriteSheet(LoadImage.FromFile("/images/sprites/tomatoes.png"));
+		ingredientImgs[1] = new SpriteSheet(LoadImage.FromFile("/images/sprites/cheese.png"));
+		ingredientImgs[2] = new SpriteSheet(LoadImage.FromFile("/images/sprites/lettuce.png"));
+		ingredientImgs[3] = new SpriteSheet(LoadImage.FromFile("/images/sprites/onions.png"));
+		ingredientImgs[4] = new SpriteSheet(LoadImage.FromFile("/images/sprites/patty.png"));
+		ingredientImgs[5] = new SpriteSheet(LoadImage.FromFile("/images/sprites/bacon.png"));
+		ingredientImgs[6] = new SpriteSheet(LoadImage.FromFile("/images/sprites/egg.png"));
+		ingredientImgs[7] = new SpriteSheet(LoadImage.FromFile("/images/sprites/bottomBun.png"));
+		ingredientImgs[8] = new SpriteSheet(LoadImage.FromFile("/images/sprites/topBun.png"));
 		
 		container [0] = new GameRectangle(45, 465, 216, 228, 5, white, 1f);
 		container [1] = new GameRectangle(276, 465, 216, 228, 5, white, 1f);
@@ -117,6 +137,8 @@ public class Main extends AbstractGame
 	{
 		if (menuText == "Game Play")
 		{
+			stopScoreSnds(score0to20Snd, score80PlusSnd, score100Snd);
+			
 			if (seconds > 0) //Checks if seconds is more than 0
 			{
 				timer = timer - deltaTime; //Calculates the time in milliseconds
@@ -138,63 +160,71 @@ public class Main extends AbstractGame
 				
 				if (currentLayer < 10)
 				{
-					if (pointBoxColl(container[0])){
-						stack[currentLayer] = "tomatoes";
-						addIngrSnd.Play();
-					}
-					else if (pointBoxColl(container[1])){
-						stack[currentLayer] = "cheese";
-						addIngrSnd.Play();
-					}
-					else if (pointBoxColl(container[2])){
-						stack[currentLayer] = "lettuce";
-						addIngrSnd.Play();
-					}
-					else if (pointBoxColl(container[3])){
-						stack[currentLayer] = "onions";
-						addIngrSnd.Play();
-					}
-					else if (pointBoxColl(container[4])){
-						stack[currentLayer] = "patty";
-						addIngrSnd.Play();
-					}
-					else if (pointBoxColl(container[5])){
-						stack[currentLayer] = "bacon";
-						addIngrSnd.Play();
-					}
-					else if (pointBoxColl(container[6])){
-						stack[currentLayer] = "egg";
-						addIngrSnd.Play();
-					}
-					else if (pointBoxColl(container[7])){
-						stack[currentLayer] = "bun";
-						addIngrSnd.Play();
-					}
-					else 
+					for (int i = 0; i < container.length; i++)
 					{
-						currentLayer--;
+						if (pointBoxColl(container[i])){
+							assignIngrToStack(i);
+							int y = 270 - 30 * currentLayer; //subtracts 30 from y coordinate of ingredient each time
+							stackImgs[currentLayer].destRec = new Rectangle(380, y, (int)(gc.GetWidth() * 0.2), (int)(gc.GetHeight() * 0.2)); //Defines bounding box
+							currentLayer++;
+							System.out.println(y);
+							
+							if (soundEffects == true){
+								addIngrSnd.Play();
+							}
+							break;
+						}
 					}
-					//System.out.println("current layer: " + currentLayer);
-					//System.out.println("stack[currentLayer]: " + stack[currentLayer]);
-					currentLayer++;
-				}
-				else if (currentLayer >= 10) //ADD TO DRAW
+				} 
+				else
 				{
-					System.out.println("You can not stack more ingredients");
+					cantAddMore = "You can not stack more ingredients";
 				}
 			}
+			
+			//Draws stack 
+			/*for (int i = 0; i < stack.length; i++)
+			{
+				if (stack[i] != null) //checks if stack with element i is not empty
+				{
+					String path = null;
+					if (stack[i] == "bun") 
+					{
+						if (hasBottomBun == true){ //if there is a bottomBun
+							path = "/images/sprites/topBun.png";
+						}
+						else{ //if there isn't a bottomBun
+							path = "/images/sprites/bottomBun.png";
+							hasBottomBun = true;							
+						}
+					}
+					else
+					{
+						path = "/images/sprites/" + stack[i] + ".png"; //Loads every ingredient except for topBun and bottomBun from path
+					}
+					
+					
+					
+				}
+			}*/
 			
 			if (Input.IsKeyReleased(KeyEvent.VK_Z) && currentLayer > 0)
 			{
 				currentLayer--;
 				stack[currentLayer] = null;
+				stackImgs[currentLayer] = null;
 				System.out.println(currentLayer);
 				System.out.println(stack[currentLayer]);
+				
+				if (soundEffects == true){
 				undoSnd.Play();
+				}
 			}
 			else if (Input.IsKeyReleased(KeyEvent.VK_Z) && currentLayer == 0)
 			{
-				cannotUndoSnd.Play();
+				if (soundEffects == true){
+					cannotUndoSnd.Play();
+					}
 			}
 		}
 		else //if the state is not Game Play
@@ -207,10 +237,12 @@ public class Main extends AbstractGame
 			
 			if (menuText == "Menu")
 			{
+				stopScoreSnds(score0to20Snd, score80PlusSnd, score100Snd);
+				
 				if (Input.IsKeyReleased(KeyEvent.VK_F))
 				{
 					menuText = "Manual";	
-					screenColour = darkRed;
+					screenColour = peach;
 				}
 				else if (Input.IsKeyReleased(KeyEvent.VK_SPACE))
 				{
@@ -227,7 +259,7 @@ public class Main extends AbstractGame
 				if (Input.IsKeyReleased(KeyEvent.VK_W))
 				{
 					menuText = "Backstory";
-					screenColour = darkBlue;
+					screenColour = darkPurple;
 				}
 				else if (Input.IsKeyReleased(KeyEvent.VK_E))
 				{
@@ -245,7 +277,7 @@ public class Main extends AbstractGame
 				else if (Input.IsKeyReleased(KeyEvent.VK_F))
 				{
 					menuText = "Manual";	
-					screenColour = darkRed;
+					screenColour = peach;
 				}
 			}
 			else if (menuText == "Instructions")
@@ -253,12 +285,12 @@ public class Main extends AbstractGame
 				if (Input.IsKeyReleased(KeyEvent.VK_F))
 				{
 					menuText = "Manual";	
-					screenColour = darkRed;
+					screenColour = peach;
 				}
 				else if (Input.IsKeyReleased(KeyEvent.VK_W))
 				{
 					menuText = "Backstory";
-					screenColour = darkBlue;
+					screenColour = darkPurple;
 				}
 			}
 			else if (menuText == "Settings")
@@ -267,11 +299,20 @@ public class Main extends AbstractGame
 				{
 					if (pointBoxColl(backMusicButton) == true && backMusic == true){
 						backMusic = false;
-						System.out.println("false");
+						System.out.println("background music off");
 					}
 					else if (pointBoxColl(backMusicButton) == true && backMusic == false){
 						backMusic = true;
-						System.out.println("true");
+						System.out.println("background music on");
+					}
+					
+					if (pointBoxColl(soundEffButton) == true && soundEffects == true){
+						soundEffects = false;
+						System.out.println("sound effects off");
+					}
+					else if (pointBoxColl(soundEffButton) == true && soundEffects == false){
+						soundEffects = true;
+						System.out.println("sound effects on");
 					}
 				}
 			}
@@ -398,9 +439,9 @@ public class Main extends AbstractGame
 		Draw.Text(gfx, "Burgers", 95, 450, titleFont, white, 1f);
 		
 		Draw.Text(gfx, "Press F for game manual", 340, 650, instructionFont, grey, 1f);
-		Draw.Text(gfx, "Press space bar for game play", 300, 700, instructionFont, purple, 1f);
+		Draw.Text(gfx, "Press space bar to play", 345, 700, instructionFont, purple, 1f);
 		Draw.Text(gfx, "Press S for game settings", 330, 750, instructionFont, grey, 1f);
-		Draw.Text(gfx, "Press D to return to menu", 333, 800, instructionFont, purple, 1f);
+		Draw.Text(gfx, "Press D to return to menu", 333, 800, instructionFont, grey, 1f);
 	}
 	
 	private static void drawManualScr (Graphics2D gfx)
@@ -408,15 +449,15 @@ public class Main extends AbstractGame
 		Draw.Text(gfx, menuText, 300, 200, menuFont, white, 1f);
 		Draw.Text(gfx, "Press W for the backstory", 340, 450, instructionFont, white, 1f);
 		Draw.Text(gfx, "Press E for instructions on how to play", 265, 500, instructionFont, white, 1f);
-		Draw.Text(gfx, "Press D to return to menu", 750, 950, returnToMenuFont, purple, 1f);
+		Draw.Text(gfx, "Press D to return to menu", 750, 950, navigationFont, purple, 1f);
 	}
 	
 	private static void drawStoryScr (Graphics2D gfx)
 	{
 		Draw.Text(gfx, menuText, 215, 200, menuFont, white, 1f);
 		
-		Draw.Text(gfx, "Congratulations! You have just graduated from Havard Universtiy with a", 50, 380, smallInstrFont, white, 1f);
-		Draw.Text(gfx, "Ph.D in biophysics. You are confident that you have a bright, rich and ", 50, 410, smallInstrFont, white, 1f);
+		Draw.Text(gfx, "Congratulations! You have just graduated from Havard University with a", 50, 380, smallInstrFont, white, 1f);
+		Draw.Text(gfx, "Ph.D. in biophysics. You are confident that you have a bright, rich and ", 50, 410, smallInstrFont, white, 1f);
 		Draw.Text(gfx, "luxurious future job ahead of you. You apply to all sorts of advanced, ", 50, 440, smallInstrFont, white, 1f);
 		Draw.Text(gfx, "high-paying jobs. The next thing you know? BAM! You get politely rejected ", 50, 470, smallInstrFont, white, 1f);
 		Draw.Text(gfx, "by all of them. After all those years of stress in school, only to come ", 50, 500, smallInstrFont, white, 1f);
@@ -430,7 +471,9 @@ public class Main extends AbstractGame
 		Draw.Text(gfx, "your first day, you know that you are ready. Because this is what", 50, 760, smallInstrFont, white, 1f);
 		Draw.Text(gfx, "everything in your life has been leading up to. ", 50, 790, smallInstrFont, white, 1f);
 		
-		Draw.Text(gfx, "Press D to return to menu", 750, 950, returnToMenuFont, purple, 1f);
+		Draw.Text(gfx, "Press D to return to menu", 750, 920, navigationFont, purple, 1f);
+		Draw.Text(gfx, "Press F to return to manual", 750, 950, navigationFont, purple, 1f);
+		Draw.Text(gfx, "Press E for instructions", 750, 980, navigationFont, purple, 1f);
 	}
 	
 	private static void drawInstrScr (Graphics2D gfx)
@@ -456,15 +499,27 @@ public class Main extends AbstractGame
 		Draw.Line(gfx, 790, 495, 720, 495, 3, red, 1f);
 		Draw.Line(gfx, 790, 645, 730, 645, 3, red, 1f);
 		
-		Draw.Text(gfx, "Press D to return to menu", 750, 950, returnToMenuFont, purple, 1f);
+		Draw.Text(gfx, "Press D to return to menu", 750, 920, navigationFont, purple, 1f);
+		Draw.Text(gfx, "Press F to return to manual", 750, 950, navigationFont, purple, 1f);
+		Draw.Text(gfx, "Press W for backstory", 750, 980, navigationFont, purple, 1f);
 	}
 	
 	private static void drawSettingsScr (Graphics2D gfx)
 	{
 		Draw.Text(gfx, menuText, 250, 200, menuFont, white, 1f);
 		Draw.Text(gfx, "Background music", 300, 400, instructionFont, white, 1f);
-		Draw.Text(gfx, "Press D to return to menu", 750, 950, returnToMenuFont, red, 1f);
+		Draw.Text(gfx, "Sound effects", 300, 480, instructionFont, white, 1f);
+		Draw.Text(gfx, "Press D to return to menu", 750, 950, navigationFont, white, 1f);
 		drawRecLine(backMusicButton, gfx); 
+		drawRecLine(soundEffButton, gfx);
+		
+		Font settingButtonFont = new Font("Impact", Font.PLAIN, 25);
+		if (backMusic == true){
+			Draw.Text(gfx, "on", 643, 397, settingButtonFont, green, 1f);
+		}
+		else if (backMusic == false){
+			Draw.Text(gfx, "off", 642, 398, settingButtonFont, white, 1f);
+		}
 	}
 	
 	private static void drawGameScr (Graphics2D gfx, GameContainer gc)
@@ -473,6 +528,8 @@ public class Main extends AbstractGame
 		{
 			Draw.Text(gfx, "Press Z to undo", 50, 360, smallInstrFont, red, 1f);
 		}
+		
+		Draw.Text(gfx, cantAddMore, 700, 150, cantAddMoreFont, red, 1f);
 		
 		finishButton.Draw(gfx);
 		Draw.Text(gfx, "FINISH", 860, 360, instructionFont, white, 1f);
@@ -489,33 +546,10 @@ public class Main extends AbstractGame
 		drawOrder(gfx, 7, 250);
 		drawOrder(gfx, 8, 275);
 		
-		boolean hasBottomBun = false; //checks if burger has a bottom bun
-		//Draws stack 
-		for (int i = 0; i < stack.length; i++)
+		for (int i = 0; i < stackImgs.length; i++)
 		{
-			if (stack[i] != null) //checks if stack with element i is not empty
-			{
-				String path = null;
-				if (stack[i] == "bun") 
-				{
-					if (hasBottomBun == true){ //if there is a bottomBun
-						path = "/images/sprites/topBun.png";
-					}
-					else{ //if there isn't a bottomBun
-						path = "/images/sprites/bottomBun.png";
-						hasBottomBun = true;							
-					}
-				}
-				else
-				{
-					path = "/images/sprites/" + stack[i] + ".png"; //Loads every ingredient except for topBun and bottomBun from path
-				}
-				
-				int y = 270 - 30*i; //subtracts 30 from y coordinate of ingredient each time
-				
-				SpriteSheet stackSlot = new SpriteSheet(LoadImage.FromFile(path)); //Loads the required ingredient to be drawn (path)
-				stackSlot.destRec = new Rectangle(380, y, (int)(gc.GetWidth() * 0.2), (int)(gc.GetHeight() * 0.2)); //Defines bounding box
-				Draw.Sprite(gfx, stackSlot); //Draws ingredient 
+			if (stackImgs[i] != null){
+				Draw.Sprite(gfx, stackImgs[i]); //Draws ingredient 
 			}
 		}
 		
@@ -536,11 +570,11 @@ public class Main extends AbstractGame
 	private static void drawScoreScr (Graphics2D gfx)
 	{
 		Draw.Text(gfx, "Score", 350, 200, menuFont, white, 1f);
-		Draw.Text(gfx, "Your score:", 380, 600, instructionFont, white, 1f);
-		Draw.Text(gfx, Integer.toString(score), 530, 600, menuFont, white, 1f);
+		Draw.Text(gfx, "Your score:", 380, 450, instructionFont, white, 1f);
+		Draw.Text(gfx, Integer.toString(score), 530, 450, menuFont, white, 1f);
 		
-		Draw.Text(gfx, "Press D to return to menu", 750, 950, returnToMenuFont, white, 1f);
-		Draw.Text(gfx, "Press space bar to replay", 345, 800, instructionFont, lightBlue, 1f);
+		Draw.Text(gfx, "Press D to return to menu", 750, 950, navigationFont, white, 1f);
+		Draw.Text(gfx, "Press space bar to replay", 345, 650, instructionFont, lightBlue, 1f);
 	}
 	
 	private static boolean pointCircleColl (GameCircle circle)
@@ -572,18 +606,20 @@ public class Main extends AbstractGame
 		
 		subtotal = (subtotal / 10) * 100;
 		score = (int)subtotal;
-		System.out.println("score: " + score);
-	}
-	
-	private static void endGame()
-	{
-		menuText = "Score Screen";
-		screenColour = purple;
-		alive = false;
-		backgrMusic.Stop();
 		
-		calcScore();
-		resetGame();
+		if (soundEffects == true)
+		{
+
+			if (score == 100){
+				score100Snd.Play();
+			}
+			if (score <= 20){
+				score0to20Snd.Play();
+			}
+			else if (score >= 80){
+				score80PlusSnd.Play();
+			}
+		}
 	}
 	
 	private static void pressedSpace()
@@ -598,11 +634,74 @@ public class Main extends AbstractGame
 		}
 	}
 	
+	private static void assignIngrToStack(int ingredientNum)
+	{
+		if (ingredientNum == 0){
+			stack[currentLayer] = "tomatoes";
+		}
+		else if (ingredientNum == 1){
+			stack[currentLayer] = "cheese";
+		}
+		else if (ingredientNum == 2){
+			stack[currentLayer] = "lettuce";
+		}
+		else if (ingredientNum == 3){
+			stack[currentLayer] = "onions";
+		}
+		else if (ingredientNum == 4){
+			stack[currentLayer] = "patty";
+		}
+		else if (ingredientNum == 5){
+			stack[currentLayer] = "bacon";
+		}
+		else if (ingredientNum == 6){
+			stack[currentLayer] = "egg";
+		}
+		else if (ingredientNum == 7){
+			stack[currentLayer] = "bun";
+		}
+		System.out.println("current layer: " + currentLayer);
+		System.out.println("stack[currentLayer]: " + stack[currentLayer]);
+
+		if (ingredientNum == 7){
+			if (hasBottomBun == false){
+				stackImgs[currentLayer] = ingredientImgs[7];
+			}
+			else if (hasBottomBun == true){
+				stackImgs[currentLayer] = ingredientImgs[8];
+				hasBottomBun = true;
+			}
+		}
+		else{
+			stackImgs[currentLayer] = ingredientImgs[ingredientNum];
+		}
+		System.out.println(stackImgs[currentLayer]);
+	}
+	
+	private static void stopScoreSnds (SoundClip one, SoundClip two, SoundClip three)
+	{
+		one.Stop();
+		two.Stop();
+		three.Stop();
+	}
+	
+	private static void endGame()
+	{
+		menuText = "Score Screen";
+		screenColour = purple;
+		alive = false;
+		backgrMusic.Stop();
+		
+		calcScore();
+		resetGame();
+	}
+	
 	private static void resetGame ()
 	{
-		timer = 16000;
-		seconds = 16;
+		timer = 160000;
+		seconds = 160;
 		currentLayer = 0;
+		
 		for (int i = 0; i < 10; i++)
 		{
 			stack[i] = null;
