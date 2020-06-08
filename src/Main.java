@@ -71,12 +71,11 @@ public class Main extends AbstractGame
 	private static SpriteSheet [] buttonImgs = new SpriteSheet[8]; //stores sprite sheets for the ingredient images of 8 buttons
 	private static SpriteSheet [] stackImgs = new SpriteSheet[10];
 	private static SpriteSheet [] ingredientImgs = new SpriteSheet[9];
-	private static boolean hasBottomBun = false; //checks if burger has a bottom bun
 	private static SpriteSheet fullGameSS = new SpriteSheet(LoadImage.FromFile("/images/sprites/fullGameSS.png")); 
 	
 	private static int score = 0;
-	private static float timer = 160000; //The time in milliseconds
-	private static Integer seconds = 160; //The time in seconds
+	private static float timer = 16000; //The time in milliseconds
+	private static Integer seconds = 16; //The time in seconds
 	
 	public static void main(String[] args) 
 	{
@@ -164,10 +163,8 @@ public class Main extends AbstractGame
 					{
 						if (pointBoxColl(container[i])){
 							assignIngrToStack(i);
-							int y = 270 - 30 * currentLayer; //subtracts 30 from y coordinate of ingredient each time
-							stackImgs[currentLayer].destRec = new Rectangle(380, y, (int)(gc.GetWidth() * 0.2), (int)(gc.GetHeight() * 0.2)); //Defines bounding box
+							
 							currentLayer++;
-							System.out.println(y);
 							
 							if (soundEffects == true){
 								addIngrSnd.Play();
@@ -182,32 +179,6 @@ public class Main extends AbstractGame
 				}
 			}
 			
-			//Draws stack 
-			/*for (int i = 0; i < stack.length; i++)
-			{
-				if (stack[i] != null) //checks if stack with element i is not empty
-				{
-					String path = null;
-					if (stack[i] == "bun") 
-					{
-						if (hasBottomBun == true){ //if there is a bottomBun
-							path = "/images/sprites/topBun.png";
-						}
-						else{ //if there isn't a bottomBun
-							path = "/images/sprites/bottomBun.png";
-							hasBottomBun = true;							
-						}
-					}
-					else
-					{
-						path = "/images/sprites/" + stack[i] + ".png"; //Loads every ingredient except for topBun and bottomBun from path
-					}
-					
-					
-					
-				}
-			}*/
-			
 			if (Input.IsKeyReleased(KeyEvent.VK_Z) && currentLayer > 0)
 			{
 				currentLayer--;
@@ -215,6 +186,7 @@ public class Main extends AbstractGame
 				stackImgs[currentLayer] = null;
 				System.out.println(currentLayer);
 				System.out.println(stack[currentLayer]);
+				cantAddMore = "";
 				
 				if (soundEffects == true){
 				undoSnd.Play();
@@ -517,8 +489,15 @@ public class Main extends AbstractGame
 		if (backMusic == true){
 			Draw.Text(gfx, "on", 643, 397, settingButtonFont, green, 1f);
 		}
-		else if (backMusic == false){
+		else{
 			Draw.Text(gfx, "off", 642, 398, settingButtonFont, white, 1f);
+		}
+		
+		if (soundEffects == true){
+			Draw.Text(gfx, "on", 643, 477, settingButtonFont, green, 1f);
+		}
+		else{
+			Draw.Text(gfx, "off", 642, 478, settingButtonFont, white, 1f);
 		}
 	}
 	
@@ -549,6 +528,8 @@ public class Main extends AbstractGame
 		for (int i = 0; i < stackImgs.length; i++)
 		{
 			if (stackImgs[i] != null){
+				int y = 270 - 30 * i; //subtracts 30 from y coordinate of ingredient each time
+				stackImgs[i].destRec = new Rectangle(380, y, (int)(gc.GetWidth() * 0.2), (int)(gc.GetHeight() * 0.2)); //Defines bounding box
 				Draw.Sprite(gfx, stackImgs[i]); //Draws ingredient 
 			}
 		}
@@ -609,7 +590,6 @@ public class Main extends AbstractGame
 		
 		if (soundEffects == true)
 		{
-
 			if (score == 100){
 				score100Snd.Play();
 			}
@@ -664,12 +644,11 @@ public class Main extends AbstractGame
 		System.out.println("stack[currentLayer]: " + stack[currentLayer]);
 
 		if (ingredientNum == 7){
-			if (hasBottomBun == false){
+			if (currentLayer == 0){
 				stackImgs[currentLayer] = ingredientImgs[7];
 			}
-			else if (hasBottomBun == true){
+			else{
 				stackImgs[currentLayer] = ingredientImgs[8];
-				hasBottomBun = true;
 			}
 		}
 		else{
@@ -698,13 +677,15 @@ public class Main extends AbstractGame
 	
 	private static void resetGame ()
 	{
-		timer = 160000;
-		seconds = 160;
+		timer = 16000;
+		seconds = 16;
 		currentLayer = 0;
+		cantAddMore = "";
 		
 		for (int i = 0; i < 10; i++)
 		{
 			stack[i] = null;
+			stackImgs[i] = null;
 		}
 	}
 }
