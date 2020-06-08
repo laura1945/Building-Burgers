@@ -1,3 +1,11 @@
+/* 
+Author: Laura Zhan
+File Name: Main.java
+Project Name: Building Burgers
+Creation Date: May 25, 2020
+Modified Date: June 8, 2020
+Description: This program is a game where a player makes burgers 
+*/
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
@@ -25,16 +33,18 @@ public class Main extends AbstractGame
 	private static int windowHeight = 1000;
 	private static int fps = 30;
 	
-	private static Color white = Helper.WHITE;
-	private static Color black = Helper.BLACK;
-	private static Color red = Helper.RED;
-	private static Color grey = Helper.GRAY;
-	private static Color lightBlue = Helper.GetColor(135, 212, 245);
-	private static Color darkPurple = Helper.GetColor(76, 26, 127);
-	private static Color green = Helper.GetColor(103, 238, 70);
-	private static Color purple = Helper.GetColor(153, 51, 255);
-	private static Color peach = Helper.GetColor(245, 194, 128);
+	//Colours
+	static Color white = Helper.WHITE;
+	static Color black = Helper.BLACK;
+	static Color red = Helper.RED;
+	static Color grey = Helper.GRAY;
+	static Color lightBlue = Helper.GetColor(135, 212, 245);
+	static Color darkPurple = Helper.GetColor(76, 26, 127);
+	static Color green = Helper.GetColor(103, 238, 70);
+	static Color purple = Helper.GetColor(153, 51, 255);
+	static Color peach = Helper.GetColor(245, 194, 128);
 	
+	//Music and sound effects
 	static SoundClip backgrMusic = new SoundClip("/sounds/music/jazz.mp3", true);
 	SoundClip addIngrSnd = new SoundClip("/sounds/effects/whoosh.wav", true); 
 	SoundClip undoSnd = new SoundClip("/sounds/effects/waterDrop.wav", true);
@@ -42,40 +52,55 @@ public class Main extends AbstractGame
 	static SoundClip score0to20Snd = new SoundClip("/sounds/effects/crying.wav", true);
 	static SoundClip score80PlusSnd = new SoundClip("/sounds/effects/applause.wav", true);
 	static SoundClip score100Snd = new SoundClip("/sounds/effects/trumpet.wav", true);
+	
+	//Keeps track of user's sound and music settings
 	static boolean backMusic = true;
 	static boolean soundEffects = true;
 	
-	private static GameRectangle [] container = new GameRectangle [8];
-	private static GameCircle finishButton = new GameCircle (900, 350, 75, 5, red, red, 1f);
-	private static GameRectangle backMusicButton = new GameRectangle (630, 375, 50, 25, 3, white, 1f);
-	private static GameRectangle soundEffButton = new GameRectangle (630, 455, 50, 25, 3, white, 1f);
+	static GameRectangle [] container = new GameRectangle [8]; //Box outlines of ingredient buttons
+	static GameCircle finishButton = new GameCircle (900, 350, 75, 5, red, red, 1f); //Finish button
 	
-	private static Font menuFont = new Font("Impact", Font.BOLD, 120);
-	private static Font smallInstrFont = new Font("Bookman Old Style", Font.PLAIN, 25);
-	private static Font instructionFont = new Font("Impact", Font.PLAIN, 30);
-	private static Font navigationFont = new Font("Times New Roman", Font.BOLD, 20);
-	private static Font orderFont = new Font("Lucida Handwriting", Font.PLAIN, 20);
-	private static Font cantAddMoreFont = new Font("Impact", Font.PLAIN, 20);
-	private static String cantAddMore = "";
+	//Buttons in settings
+	static GameRectangle backMusicButton = new GameRectangle (630, 375, 50, 25, 3, white, 1f); 
+	static GameRectangle soundEffButton = new GameRectangle (630, 455, 50, 25, 3, white, 1f);
+	static GameRectangle sec25Button = new GameRectangle (630, 625, 25, 25, 3, white, 1f);
+	static GameRectangle sec20Button = new GameRectangle (630, 675, 25, 25, 3, white, 1f);
+	static GameRectangle sec15Button = new GameRectangle (630, 725, 25, 25, 3, white, 1f);
+	static GameRectangle sec10Button = new GameRectangle (630, 775, 25, 25, 3, white, 1f);
+	static GameRectangle sec5Button = new GameRectangle (630, 825, 25, 25, 3, white, 1f);
+	static float secButtonMarkY = sec15Button.GetTop() + 13; //y coordinate of green dot that indicates which time player chose
+	
+	//Fonts
+	static Font menuFont = new Font("Impact", Font.BOLD, 120);
+	static Font smallInstrFont = new Font("Bookman Old Style", Font.PLAIN, 25);
+	static Font instructionFont = new Font("Impact", Font.PLAIN, 30);
+	static Font navigationFont = new Font("Times New Roman", Font.BOLD, 20);
+	static Font orderFont = new Font("Lucida Handwriting", Font.PLAIN, 20);
+	static Font cantAddMoreFont = new Font("Impact", Font.PLAIN, 20);
+	
+	static String cantAddMore = ""; //Stores String of "You can not add more ingredients" when required
  
-	private static Color screenColour = lightBlue;
-	private static String menuText = "Menu";
+	//Default screen basic graphics
+	static Color screenColour = lightBlue;
+	static String menuText = "Menu";
 	
-	private static Vector2F mousePos = Input.GetMousePos();
+	static Vector2F mousePos = Input.GetMousePos(); //Stores mouse position
 	
-	private static boolean alive;
+	static boolean alive; //Keeps track of player's alive or dead state
 	
-	private static String [] orderTicketIngr = new String[10];
-	private static String [] stack = new String[10];
-	private static int currentLayer = 0;
-	private static SpriteSheet [] buttonImgs = new SpriteSheet[8]; //stores sprite sheets for the ingredient images of 8 buttons
-	private static SpriteSheet [] stackImgs = new SpriteSheet[10];
-	private static SpriteSheet [] ingredientImgs = new SpriteSheet[9];
-	private static SpriteSheet fullGameSS = new SpriteSheet(LoadImage.FromFile("/images/sprites/fullGameSS.png")); 
+	static String [] orderTicketIngr = new String[10]; //Order ticket (list of ingredients)
+	static String [] stack = new String[10]; //Keeps track of the player's burger
+	static int currentLayer = 0; //Keeps track of current layer of player's burger
+	static SpriteSheet [] ingredientImgs = new SpriteSheet[9]; //Ingredient images for player's burger
+	static SpriteSheet [] stackImgs = new SpriteSheet[10]; //Stores player's burger's ingredient images
+	static SpriteSheet [] buttonImgs = new SpriteSheet[8]; //stores sprite sheets for the ingredient images of 8 buttons
+	static SpriteSheet fullGameSS = new SpriteSheet(LoadImage.FromFile("/images/sprites/fullGameSS.png")); //Screenshot of game 
 	
-	private static int score = 0;
-	private static float timer = 16000; //The time in milliseconds
-	private static Integer seconds = 16; //The time in seconds
+	static int score = 0; //Player's score out of 100
+	static float setMilisec = 15000; //Stores player's choice of time, in miliseconds
+	static int setSec = 15; //Stores player's choice of time in seconds
+	static float timer = 15000; //The time in milliseconds
+	static Integer seconds = 15; //The time in seconds
 	
 	public static void main(String[] args) 
 	{
@@ -86,10 +111,11 @@ public class Main extends AbstractGame
 	@Override
 	public void LoadContent(GameContainer gc)
 	{
-		//System.out.println("\n\norderTicketIngr: " + orderTicketIngr[0] + " " + orderTicketIngr[1] + " " + orderTicketIngr[2] + " " + orderTicketIngr[3] + " " + orderTicketIngr[4] + " " + orderTicketIngr[5] + " " + orderTicketIngr[6] + " " + orderTicketIngr[7]);
+		//Not displayed to player, sets first and last elements to bun
 		orderTicketIngr[0] = "bun";
 		orderTicketIngr[9] = "bun";
 		
+		//Loads all ingredientImgs
 		ingredientImgs[0] = new SpriteSheet(LoadImage.FromFile("/images/sprites/tomatoes.png"));
 		ingredientImgs[1] = new SpriteSheet(LoadImage.FromFile("/images/sprites/cheese.png"));
 		ingredientImgs[2] = new SpriteSheet(LoadImage.FromFile("/images/sprites/lettuce.png"));
@@ -100,6 +126,7 @@ public class Main extends AbstractGame
 		ingredientImgs[7] = new SpriteSheet(LoadImage.FromFile("/images/sprites/bottomBun.png"));
 		ingredientImgs[8] = new SpriteSheet(LoadImage.FromFile("/images/sprites/topBun.png"));
 		
+		//Sets GameRectangles for each container element
 		container [0] = new GameRectangle(45, 465, 216, 228, 5, white, 1f);
 		container [1] = new GameRectangle(276, 465, 216, 228, 5, white, 1f);
 		container [2] = new GameRectangle(507, 465, 216, 228, 5, white, 1f);
@@ -109,13 +136,13 @@ public class Main extends AbstractGame
 		container [6] = new GameRectangle(507, 708, 216, 228, 5, white, 1f);
 		container [7] = new GameRectangle(738, 708, 216, 228, 5, white, 1f);
 		
-		String [] containerIngr = new String [] {"tomatoes", "cheese", "lettuce", "onions", "patty", "bacon", "egg", "bun"};
+		String [] containerIngr = new String [] {"tomatoes", "cheese", "lettuce", "onions", "patty", "bacon", "egg", "bun"}; //Used to load an image for buttonImgs
 		int x = 55; //starting x coordinate
 		int y = 465; //starting y coordinate
 		//Loops through buttonImgs and draws each containerIngr
 		for (int i = 0; i < buttonImgs.length; i++)
 		{
-			String containerPath = null;		
+			String containerPath = null; //Stores image's file location		
 			
 			if (containerIngr[i] == "patty"){ //Adjusts coordinates for next row
 				x = 55;
@@ -123,10 +150,10 @@ public class Main extends AbstractGame
 			}
 			
 			containerPath = "/images/sprites/" + containerIngr[i] + ".png";
-			buttonImgs[i] = new SpriteSheet(LoadImage.FromFile("/images/sprites/" + containerIngr[i] + ".png")); //Loads the required ingredient to be drawn (path)
+			buttonImgs[i] = new SpriteSheet(LoadImage.FromFile(containerPath)); //Loads the required ingredient to be drawn 
 			buttonImgs[i].destRec = new Rectangle(x, y, (int)(gc.GetWidth() * 0.2), (int)(gc.GetHeight() * 0.2)); //Defines bounding box
 			
-			int xDistance = 231;
+			int xDistance = 231; //horizontal distance between each buttonImg
 			x = x + xDistance; //Updates x coordinate
 		}
 	}
@@ -134,38 +161,42 @@ public class Main extends AbstractGame
 	@Override
 	public void Update(GameContainer gc, float deltaTime) 
 	{
+		//If game state is in Game Play
 		if (menuText == "Game Play")
-		{
-			stopScoreSnds(score0to20Snd, score80PlusSnd, score100Snd);
+		{ 
+			stopScoreSnds(score0to20Snd, score80PlusSnd, score100Snd); //Stops sound effects from previous play
 			
+			//Timer
 			if (seconds > 0) //Checks if seconds is more than 0
 			{
 				timer = timer - deltaTime; //Calculates the time in milliseconds
 				seconds = Math.round(timer/1000); //Converts the time in milliseconds to seconds
 			}
 			
-			if (seconds == 0)
+			if (seconds == 0) //If time runs out, end game
 			{
 				endGame();
 			}
 			
-			//Checks mouse click position
+			//Checks if left button of mouse clicked
 			if (Input.IsMouseButtonReleased(Input.MOUSE_LEFT))
 			{
+				//If user clicks finishButton, end game
 				if (pointCircleColl(finishButton))
 				{
 					endGame();
 				}
 				
+				//Keeps track of what ingredients user is adding 
 				if (currentLayer < 10)
 				{
 					for (int i = 0; i < container.length; i++)
 					{
 						if (pointBoxColl(container[i])){
 							assignIngrToStack(i);
-							
 							currentLayer++;
 							
+							//Plays sound effect for adding ingredients if sound effects are on in settings
 							if (soundEffects == true){
 								addIngrSnd.Play();
 							}
@@ -179,19 +210,19 @@ public class Main extends AbstractGame
 				}
 			}
 			
+			//Changes burger state when user removes a layer
 			if (Input.IsKeyReleased(KeyEvent.VK_Z) && currentLayer > 0)
 			{
 				currentLayer--;
 				stack[currentLayer] = null;
 				stackImgs[currentLayer] = null;
-				System.out.println(currentLayer);
-				System.out.println(stack[currentLayer]);
-				cantAddMore = "";
+				cantAddMore = ""; //Turns off "You can not add more ingredients" message
 				
 				if (soundEffects == true){
 				undoSnd.Play();
 				}
 			}
+			//Plays sound effect for when there's no layers to remove
 			else if (Input.IsKeyReleased(KeyEvent.VK_Z) && currentLayer == 0)
 			{
 				if (soundEffects == true){
@@ -199,14 +230,17 @@ public class Main extends AbstractGame
 					}
 			}
 		}
-		else //if the state is not Game Play
+		//if the state is not Game Play
+		else 
 		{
+			//Returns to menu screen from any other screen and sets screen colour
 			if (Input.IsKeyReleased(KeyEvent.VK_D))
 			{
 				menuText = "Menu";
 				screenColour = lightBlue;
 			}
 			
+			//Dictates which screens user can switch to depending on which screen they are currently in and sets screen colour
 			if (menuText == "Menu")
 			{
 				stopScoreSnds(score0to20Snd, score80PlusSnd, score100Snd);
@@ -267,24 +301,37 @@ public class Main extends AbstractGame
 			}
 			else if (menuText == "Settings")
 			{
+				//Checks if user clicked on a button in settings, updates setting
 				if (Input.IsMouseButtonReleased(Input.MOUSE_LEFT))
 				{
-					if (pointBoxColl(backMusicButton) == true && backMusic == true){
+					if (pointBoxColl(backMusicButton) && backMusic == true){
 						backMusic = false;
-						System.out.println("background music off");
 					}
-					else if (pointBoxColl(backMusicButton) == true && backMusic == false){
+					else if (pointBoxColl(backMusicButton) && backMusic == false){
 						backMusic = true;
-						System.out.println("background music on");
 					}
 					
-					if (pointBoxColl(soundEffButton) == true && soundEffects == true){
+					if (pointBoxColl(soundEffButton) && soundEffects == true){
 						soundEffects = false;
-						System.out.println("sound effects off");
 					}
-					else if (pointBoxColl(soundEffButton) == true && soundEffects == false){
+					else if (pointBoxColl(soundEffButton) && soundEffects == false){
 						soundEffects = true;
-						System.out.println("sound effects on");
+					}
+					
+					if (pointBoxColl(sec25Button)){
+						setTimer(25000, 25000, 25, 25, sec25Button);
+					}
+					else if (pointBoxColl(sec20Button)){
+						setTimer(20000, 20000, 20, 20, sec20Button);
+					}
+					else if (pointBoxColl(sec15Button)){
+						setTimer(15000, 15000, 15, 15, sec15Button);
+					}
+					else if (pointBoxColl(sec10Button)){
+						setTimer(10000, 10000, 10, 10, sec10Button);
+					}
+					else if (pointBoxColl(sec5Button)){
+						setTimer(5000, 5000, 5, 5, sec5Button);
 					}
 				}
 			}
@@ -301,8 +348,9 @@ public class Main extends AbstractGame
 	@Override
 	public void Draw(GameContainer gc, Graphics2D gfx) 
 	{
-		Draw.FillRect(gfx, 0, 0, 1000, 1000, screenColour, 1f);
+		Draw.FillRect(gfx, 0, 0, 1000, 1000, screenColour, 1f); //Draws screen colour
 		
+		//Draws screen details 
 		if (menuText == "Menu")
 		{
 			drawMenuScr(gfx);
@@ -311,11 +359,13 @@ public class Main extends AbstractGame
 		{
 			drawManualScr(gfx);
 		}
-		else if (menuText == "Backstory"){
+		else if (menuText == "Backstory")
+		{
 			drawStoryScr(gfx);
 		}
-		else if (menuText == "Instructions"){
-			
+		else if (menuText == "Instructions")
+		{
+			//Draws game screenshot
 			fullGameSS.destRec = new Rectangle(230, 480, (int)(gc.GetWidth() * 0.5), (int)(gc.GetHeight() * 0.5)); //Defines bounding box
 			Draw.Sprite(gfx, fullGameSS); 
 			
@@ -336,16 +386,21 @@ public class Main extends AbstractGame
 	}
 	
 	static Random rng = new Random();
+	//Pre: None
+	//Post: None
+	//Desc: Randomly generates order ticket ingredients
 	private static void genIngredients ()
 	{
 		int rangeLow = 1; 
 		int rangeHigh = 8;
 		int ingredientNum;
 		
+		//Generates 8 random ingredients
 		for (int i = 1; i <= 8; i++)
 		{
 			ingredientNum = (int)((rng.nextFloat() * (rangeHigh - rangeLow)) + rangeLow);
 			
+			//Assigns an ingredient based on ingredientNum
 			if (ingredientNum == 1)
 			{
 				orderTicketIngr[i] = "tomatoes";
@@ -375,14 +430,19 @@ public class Main extends AbstractGame
 				orderTicketIngr[i] = "egg";
 			}
 		}
-		System.out.println("ingredients: " + orderTicketIngr[0] + " " + orderTicketIngr[1] + " " + orderTicketIngr[2] + " " + orderTicketIngr[3] + " " + orderTicketIngr[4] + " " + orderTicketIngr[5] + " " + orderTicketIngr[6] + " " + orderTicketIngr[7] + " " + orderTicketIngr[8]+ " " + orderTicketIngr[9]);
 	}
 	
+	//Pre: gfx is needed for Draw.Text, indexNum and yCoord are used to draw the ingredient
+	//Post: None
+	//Desc: Draws list of orderTicketIngr
 	private static void drawOrder (Graphics2D gfx, int indexNum, int yCoord)
 	{
 		Draw.Text(gfx, orderTicketIngr[indexNum], 50, yCoord, orderFont, white, 1f);
 	}
 	
+	//Pre: box is required to compare its coordinates to mousePos
+	//Post: returns true if there's a collision, false otherwise
+	//Desc: Detects collision between a GameRectangle and mouse click
 	private static boolean pointBoxColl (GameRectangle box)
 	{
 		if (mousePos.x >= box.GetLeft() && mousePos.x <= box.GetRight() &&	//Left/Right Walls 
@@ -396,6 +456,9 @@ public class Main extends AbstractGame
 		}
 	}
 	
+	//Pre: rec and gfx required to draw the GameRectangle
+	//Post: None
+	//Desc: Draws GameRectangle (outline only)
 	private static void drawRecLine (GameRectangle rec, Graphics2D gfx)
 	{
 		float height = rec.GetBottom() - rec.GetTop();
@@ -404,6 +467,9 @@ public class Main extends AbstractGame
 		
 	}
 	
+	//Pre: gfx is required for drawing
+	//Post: None
+	//Desc: Draws menu screen
 	private static void drawMenuScr (Graphics2D gfx)
 	{
 		Font titleFont = new Font("Copperplate Gothic Bold", Font.BOLD, 150);
@@ -416,6 +482,9 @@ public class Main extends AbstractGame
 		Draw.Text(gfx, "Press D to return to menu", 333, 800, instructionFont, grey, 1f);
 	}
 	
+	//Pre: gfx is required for drawing
+	//Post: None
+	//Desc: draws manual screen
 	private static void drawManualScr (Graphics2D gfx)
 	{
 		Draw.Text(gfx, menuText, 300, 200, menuFont, white, 1f);
@@ -424,6 +493,9 @@ public class Main extends AbstractGame
 		Draw.Text(gfx, "Press D to return to menu", 750, 950, navigationFont, purple, 1f);
 	}
 	
+	//Pre: gfx is required for drawing
+	//Post: None
+	//Desc: draws back story screen
 	private static void drawStoryScr (Graphics2D gfx)
 	{
 		Draw.Text(gfx, menuText, 215, 200, menuFont, white, 1f);
@@ -447,7 +519,10 @@ public class Main extends AbstractGame
 		Draw.Text(gfx, "Press F to return to manual", 750, 950, navigationFont, purple, 1f);
 		Draw.Text(gfx, "Press E for instructions", 750, 980, navigationFont, purple, 1f);
 	}
-	
+
+	//Pre: gfx is required for drawing
+	//Post: None
+	//Desc: Draws instruction screen
 	private static void drawInstrScr (Graphics2D gfx)
 	{
 		Font labelFont = new Font ("Times New Roman", Font.PLAIN, 20);
@@ -466,6 +541,7 @@ public class Main extends AbstractGame
 		Draw.Text(gfx, "Time left (in seconds)", 800, 500, labelFont, red, 1f);
 		Draw.Text(gfx, "Click here to finish", 800, 650, labelFont, red, 1f);
 		
+		//lines labeling parts of the game screenshot
 		Draw.Line(gfx, 170, 900, 270, 910, 3, red, 1f);
 		Draw.Line(gfx, 160, 495, 230, 520, 3, red, 1f);
 		Draw.Line(gfx, 790, 495, 720, 495, 3, red, 1f);
@@ -476,16 +552,40 @@ public class Main extends AbstractGame
 		Draw.Text(gfx, "Press W for backstory", 750, 980, navigationFont, purple, 1f);
 	}
 	
+	//Pre: gfx is required for drawing
+	//Post: None
+	//Desc: draws settings screen
 	private static void drawSettingsScr (Graphics2D gfx)
 	{
 		Draw.Text(gfx, menuText, 250, 200, menuFont, white, 1f);
+		
+		//Sound settings text
 		Draw.Text(gfx, "Background music", 300, 400, instructionFont, white, 1f);
 		Draw.Text(gfx, "Sound effects", 300, 480, instructionFont, white, 1f);
+		
+		//Timer settings text
+		Draw.Text(gfx, "Timer", 300, 600, instructionFont, lightBlue, 1f);
+		Draw.Text(gfx, "25 seconds", 300, 650, instructionFont, white, 1f);
+		Draw.Text(gfx, "20 seconds", 300, 700, instructionFont, white, 1f);
+		Draw.Text(gfx, "15 seconds", 300, 750, instructionFont, white, 1f);
+		Draw.Text(gfx, "10 seconds", 300, 800, instructionFont, white, 1f);
+		Draw.Text(gfx, "5 seconds", 310, 850, instructionFont, white, 1f);
+		
+		Draw.FillEllipse(gfx, 642, secButtonMarkY, 10, 10, green, 1f); //Draws green dot indicator for timer settings
+		
 		Draw.Text(gfx, "Press D to return to menu", 750, 950, navigationFont, white, 1f);
+		
+		//Draws button outlines
 		drawRecLine(backMusicButton, gfx); 
 		drawRecLine(soundEffButton, gfx);
+		drawRecLine(sec25Button, gfx);
+		drawRecLine(sec20Button, gfx);
+		drawRecLine(sec15Button, gfx);
+		drawRecLine(sec10Button, gfx);
+		drawRecLine(sec5Button, gfx);
 		
 		Font settingButtonFont = new Font("Impact", Font.PLAIN, 25);
+		//Draws on or off on sound buttons
 		if (backMusic == true){
 			Draw.Text(gfx, "on", 643, 397, settingButtonFont, green, 1f);
 		}
@@ -501,20 +601,40 @@ public class Main extends AbstractGame
 		}
 	}
 	
+	//Pre: miliSec and seconds2 are what timer and seconds will become, setMiliseconds and setSeconds are what setMilisec and setSec will become
+	//Post: None
+	//Desc: Updates timer, setMilisec, seconds, and setSec based on player's changes to the timer setting
+	private static void setTimer(float miliSec, float setMiliseconds, Integer seconds2, int setSeconds, GameRectangle secButton)
+	{
+		timer = miliSec;
+		setMilisec = setMiliseconds;
+		seconds = seconds2;
+		setSec = setSeconds;
+		
+		secButtonMarkY = secButton.GetTop() + 13; //updates y coordinate (of green dot that indicates which time player chose) to new secButton
+	}
+
+	//Pre: gfx is required for drawing, gc is required for defining bounding box for SpriteSheets
+	//Post: None
+	//Desc: draws game screen
 	private static void drawGameScr (Graphics2D gfx, GameContainer gc)
 	{ 
+		//Tells user about undo option if they have at least one ingredient 
 		if (stack[0] != null)
 		{
 			Draw.Text(gfx, "Press Z to undo", 50, 360, smallInstrFont, red, 1f);
 		}
 		
+		//Lets user know they can't add more ingredients (when they reach limit)
 		Draw.Text(gfx, cantAddMore, 700, 150, cantAddMoreFont, red, 1f);
 		
+		//Draws finish button
 		finishButton.Draw(gfx);
 		Draw.Text(gfx, "FINISH", 860, 360, instructionFont, white, 1f);
 		
 		Draw.Text(gfx, "Remaining time: " + Integer.toString(seconds), 730, 50, instructionFont, white, 1f); //Displays remaining time in seconds
 		
+		//Draws order ticket list
 		Draw.Text(gfx, "Order Ticket", 45, 60, instructionFont, lightBlue, 1f);
 		drawOrder(gfx, 1, 100);
 		drawOrder(gfx, 2, 125);
@@ -525,6 +645,7 @@ public class Main extends AbstractGame
 		drawOrder(gfx, 7, 250);
 		drawOrder(gfx, 8, 275);
 		
+		//Draws user's burger
 		for (int i = 0; i < stackImgs.length; i++)
 		{
 			if (stackImgs[i] != null){
@@ -533,14 +654,16 @@ public class Main extends AbstractGame
 				Draw.Sprite(gfx, stackImgs[i]); //Draws ingredient 
 			}
 		}
+
+		Draw.Rect(gfx, 30, 450, 940, 500, 5, white, 1f); //Draws overall outline of ingredient buttons
 		
 		//Draws ingredient images for the buttons
 		for (int i = 0; i < buttonImgs.length; i++)
 		{
 			Draw.Sprite(gfx, buttonImgs[i]); 
 		}
-
-		Draw.Rect(gfx, 30, 450, 940, 500, 5, white, 1f);
+		
+		//Draws each ingredient button outline
 		for (int i = 0; i < 8; i++)
 		{
 			GameRectangle rec = container[i];
@@ -548,6 +671,9 @@ public class Main extends AbstractGame
 		}
 	}
 	
+	//Pre: gfx is required for drawing
+	//Post: None
+	//Desc: Draws score screen
 	private static void drawScoreScr (Graphics2D gfx)
 	{
 		Draw.Text(gfx, "Score", 350, 200, menuFont, white, 1f);
@@ -557,51 +683,28 @@ public class Main extends AbstractGame
 		Draw.Text(gfx, "Press D to return to menu", 750, 950, navigationFont, white, 1f);
 		Draw.Text(gfx, "Press space bar to replay", 345, 650, instructionFont, lightBlue, 1f);
 	}
-	
+
+	//Pre: circle is required for its coordinates
+	//Post: returns true if there's a collision, false otherwise
+	//Desc: detecs collision between circle and mouse click
 	private static boolean pointCircleColl (GameCircle circle)
 	{
-		//Calculate the distance squared using pythagorean theorem between the point and
-		//the circle's centre
+		//Calculates the distance squared using pythagorean theorem between the point and the circle's centre
 		double distanceSqr = Math.pow(mousePos.x - circle.GetCentre().x, 2) + Math.pow(mousePos.y - circle.GetCentre().y, 2);
 		
 		//If that distance is within range of the radius then there is a collision
-		if (distanceSqr <= Math.pow(circle.GetRad(), 2))	//Uses the shortcut method to avoid square roots
+		if (distanceSqr <= Math.pow(circle.GetRad(), 2))	
 		{
 			return true;
 		}
 		
 		return false;
 	}
-	
-	private static void calcScore ()
-	{
-		double subtotal = 0;
-		
-		for (int i = 0; i < 10; i++)
-		{
-			if (orderTicketIngr[i] == stack[i])
-			{
-				subtotal++;
-			}
-		}
-		
-		subtotal = (subtotal / 10) * 100;
-		score = (int)subtotal;
-		
-		if (soundEffects == true)
-		{
-			if (score == 100){
-				score100Snd.Play();
-			}
-			if (score <= 20){
-				score0to20Snd.Play();
-			}
-			else if (score >= 80){
-				score80PlusSnd.Play();
-			}
-		}
-	}
-	
+
+
+	//Pre: None
+	//Post: None
+	//Desc: Sets up game when user presses space bar
 	private static void pressedSpace()
 	{
 		menuText = "Game Play";
@@ -609,11 +712,15 @@ public class Main extends AbstractGame
 		screenColour = black;
 		alive = true;
 		
+		//plays background music if user has the setting turned on
 		if (backMusic == true){
 			backgrMusic.Play();
 		}
 	}
-	
+
+	//Pre: ingredientNum is the ingredient user clicked on
+	//Post: None
+	//Desc: Assigns an ingredient to player's burger based 
 	private static void assignIngrToStack(int ingredientNum)
 	{
 		if (ingredientNum == 0){
@@ -640,30 +747,34 @@ public class Main extends AbstractGame
 		else if (ingredientNum == 7){
 			stack[currentLayer] = "bun";
 		}
-		System.out.println("current layer: " + currentLayer);
-		System.out.println("stack[currentLayer]: " + stack[currentLayer]);
-
+		
+		// Assigns player's burger an ingredient image 
 		if (ingredientNum == 7){
-			if (currentLayer == 0){
+			if (currentLayer == 0){ //Only the first layer can have a bottom bun
 				stackImgs[currentLayer] = ingredientImgs[7];
 			}
 			else{
-				stackImgs[currentLayer] = ingredientImgs[8];
+				stackImgs[currentLayer] = ingredientImgs[8]; //every other layer can have a top bun 
 			}
 		}
 		else{
 			stackImgs[currentLayer] = ingredientImgs[ingredientNum];
 		}
-		System.out.println(stackImgs[currentLayer]);
 	}
 	
+	//Pre: one two and three are sound effects to be stopped
+	//Post: None
+	//Desc: Stops sound effects
 	private static void stopScoreSnds (SoundClip one, SoundClip two, SoundClip three)
 	{
 		one.Stop();
 		two.Stop();
 		three.Stop();
 	}
-	
+
+	//Pre: None
+	//Post: None
+	//Desc: Brings state out of Game Play and into Score Screen
 	private static void endGame()
 	{
 		menuText = "Score Screen";
@@ -674,11 +785,48 @@ public class Main extends AbstractGame
 		calcScore();
 		resetGame();
 	}
+
+	//Pre: None
+	//Post: None
+	//Desc: calculates player's score
+	private static void calcScore ()
+	{
+		double subtotal = 0; //Stores player's score out of 10
+		
+		//Checks for matching ingredients in player and order ticket's burger
+		for (int i = 0; i < 10; i++)
+		{
+			if (orderTicketIngr[i] == stack[i])
+			{
+				subtotal++;
+			}
+		}
+		
+		subtotal = (subtotal / 10) * 100; //Converts score to out of 100
+		score = (int)subtotal; //Rounded score out of 100
+		
+		//Plays sound effects depending on score if sound effects turned on in settings
+		if (soundEffects == true)
+		{
+			if (score == 100){
+				score100Snd.Play();
+			}
+			if (score <= 20){
+				score0to20Snd.Play();
+			}
+			else if (score >= 80){
+				score80PlusSnd.Play();
+			}
+		}
+	}
 	
+	//Pre: None
+	//Post: None
+	//Desc: Resets game settings
 	private static void resetGame ()
 	{
-		timer = 16000;
-		seconds = 16;
+		timer = setMilisec;
+		seconds = setSec;
 		currentLayer = 0;
 		cantAddMore = "";
 		
