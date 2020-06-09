@@ -49,6 +49,7 @@ public class Main extends AbstractGame
 	SoundClip addIngrSnd = new SoundClip("/sounds/effects/whoosh.wav", true); 
 	SoundClip undoSnd = new SoundClip("/sounds/effects/waterDrop.wav", true);
 	SoundClip cannotUndoSnd = new SoundClip("/sounds/effects/click_x.wav", true);
+	static SoundClip score0Snd = new SoundClip("/sounds/effects/violin.mp3", true);
 	static SoundClip score0to20Snd = new SoundClip("/sounds/effects/crying.wav", true);
 	static SoundClip score80PlusSnd = new SoundClip("/sounds/effects/applause.wav", true);
 	static SoundClip score100Snd = new SoundClip("/sounds/effects/trumpet.wav", true);
@@ -164,7 +165,7 @@ public class Main extends AbstractGame
 		//If game state is in Game Play
 		if (menuText == "Game Play")
 		{ 
-			stopScoreSnds(score0to20Snd, score80PlusSnd, score100Snd); //Stops sound effects from previous play
+			stopScoreSnds(score0Snd, score0to20Snd, score80PlusSnd, score100Snd); //Stops sound effects from previous play
 			
 			//Timer
 			if (seconds > 0) //Checks if seconds is more than 0
@@ -243,7 +244,7 @@ public class Main extends AbstractGame
 			//Dictates which screens user can switch to depending on which screen they are currently in and sets screen colour
 			if (menuText == "Menu")
 			{
-				stopScoreSnds(score0to20Snd, score80PlusSnd, score100Snd);
+				stopScoreSnds(score0Snd, score0to20Snd, score80PlusSnd, score100Snd);
 				
 				if (Input.IsKeyReleased(KeyEvent.VK_F))
 				{
@@ -765,11 +766,12 @@ public class Main extends AbstractGame
 	//Pre: one two and three are sound effects to be stopped
 	//Post: None
 	//Desc: Stops sound effects
-	private static void stopScoreSnds (SoundClip one, SoundClip two, SoundClip three)
+	private static void stopScoreSnds (SoundClip one, SoundClip two, SoundClip three, SoundClip four)
 	{
 		one.Stop();
 		two.Stop();
 		three.Stop();
+		four.Stop();
 	}
 
 	//Pre: None
@@ -810,6 +812,9 @@ public class Main extends AbstractGame
 		{
 			if (score == 100){
 				score100Snd.Play();
+			}
+			if (score == 0){
+				score0Snd.Play();
 			}
 			if (score <= 20){
 				score0to20Snd.Play();
