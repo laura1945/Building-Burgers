@@ -58,17 +58,17 @@ public class Main extends AbstractGame
 	static boolean backMusic = true;
 	static boolean soundEffects = true;
 	
-	static GameRectangle [] container = new GameRectangle [8]; //Box outlines of ingredient buttons
-	static GameCircle finishButton = new GameCircle (900, 350, 75, 5, red, red, 1f); //Finish button
+	static GameRectangle [] container = new GameRectangle[8]; //Box outlines of ingredient buttons
+	static GameCircle finishButton = new GameCircle(900, 350, 75, 5, red, red, 1f); //Finish button
 	
 	//Buttons in settings
-	static GameRectangle backMusicButton = new GameRectangle (630, 375, 50, 25, 3, white, 1f); 
-	static GameRectangle soundEffButton = new GameRectangle (630, 455, 50, 25, 3, white, 1f);
-	static GameRectangle sec25Button = new GameRectangle (630, 625, 25, 25, 3, white, 1f);
-	static GameRectangle sec20Button = new GameRectangle (630, 675, 25, 25, 3, white, 1f);
-	static GameRectangle sec15Button = new GameRectangle (630, 725, 25, 25, 3, white, 1f);
-	static GameRectangle sec10Button = new GameRectangle (630, 775, 25, 25, 3, white, 1f);
-	static GameRectangle sec5Button = new GameRectangle (630, 825, 25, 25, 3, white, 1f);
+	static GameRectangle backMusicButton = new GameRectangle(630, 375, 50, 25, 3, white, 1f); 
+	static GameRectangle soundEffButton = new GameRectangle(630, 455, 50, 25, 3, white, 1f);
+	static GameRectangle sec25Button = new GameRectangle(630, 625, 25, 25, 3, white, 1f);
+	static GameRectangle sec20Button = new GameRectangle(630, 675, 25, 25, 3, white, 1f);
+	static GameRectangle sec15Button = new GameRectangle(630, 725, 25, 25, 3, white, 1f);
+	static GameRectangle sec10Button = new GameRectangle(630, 775, 25, 25, 3, white, 1f);
+	static GameRectangle sec5Button = new GameRectangle(630, 825, 25, 25, 3, white, 1f);
 	static float secButtonMarkY = sec15Button.GetTop() + 13; //y coordinate of green dot that indicates which time player chose
 	
 	//Fonts
@@ -128,16 +128,16 @@ public class Main extends AbstractGame
 		ingredientImgs[8] = new SpriteSheet(LoadImage.FromFile("/images/sprites/topBun.png"));
 		
 		//Sets GameRectangles for each container element
-		container [0] = new GameRectangle(45, 465, 216, 228, 5, white, 1f);
-		container [1] = new GameRectangle(276, 465, 216, 228, 5, white, 1f);
-		container [2] = new GameRectangle(507, 465, 216, 228, 5, white, 1f);
-		container [3] = new GameRectangle(738, 465, 216, 228, 5, white, 1f);
-		container [4] = new GameRectangle(45, 708, 216, 228, 5, white, 1f);
-		container [5] = new GameRectangle(276, 708, 216, 228, 5, white, 1f);
-		container [6] = new GameRectangle(507, 708, 216, 228, 5, white, 1f);
-		container [7] = new GameRectangle(738, 708, 216, 228, 5, white, 1f);
+		container[0] = new GameRectangle(45, 465, 216, 228, 5, white, 1f);
+		container[1] = new GameRectangle(276, 465, 216, 228, 5, white, 1f);
+		container[2] = new GameRectangle(507, 465, 216, 228, 5, white, 1f);
+		container[3] = new GameRectangle(738, 465, 216, 228, 5, white, 1f);
+		container[4] = new GameRectangle(45, 708, 216, 228, 5, white, 1f);
+		container[5] = new GameRectangle(276, 708, 216, 228, 5, white, 1f);
+		container[6] = new GameRectangle(507, 708, 216, 228, 5, white, 1f);
+		container[7] = new GameRectangle(738, 708, 216, 228, 5, white, 1f);
 		
-		String [] containerIngr = new String [] {"tomatoes", "cheese", "lettuce", "onions", "patty", "bacon", "egg", "bun"}; //Used to load an image for buttonImgs
+		String [] containerIngr = new String[]{"tomatoes", "cheese", "lettuce", "onions", "patty", "bacon", "egg", "bun"}; //Used to load an image for buttonImgs
 		int x = 55; //starting x coordinate
 		int y = 465; //starting y coordinate
 		//Loops through buttonImgs and draws each containerIngr
@@ -436,7 +436,7 @@ public class Main extends AbstractGame
 	//Pre: gfx is needed for Draw.Text, indexNum and yCoord are used to draw the ingredient
 	//Post: None
 	//Desc: Draws list of orderTicketIngr
-	private static void drawOrder (Graphics2D gfx, int indexNum, int yCoord)
+	private static void drawOrder(Graphics2D gfx, int indexNum, int yCoord)
 	{
 		Draw.Text(gfx, orderTicketIngr[indexNum], 50, yCoord, orderFont, white, 1f);
 	}
@@ -444,7 +444,7 @@ public class Main extends AbstractGame
 	//Pre: box is required to compare its coordinates to mousePos
 	//Post: returns true if there's a collision, false otherwise
 	//Desc: Detects collision between a GameRectangle and mouse click
-	private static boolean pointBoxColl (GameRectangle box)
+	private static boolean pointBoxColl(GameRectangle box)
 	{
 		if (mousePos.x >= box.GetLeft() && mousePos.x <= box.GetRight() &&	//Left/Right Walls 
 			mousePos.y >= box.GetTop() && mousePos.y <= box.GetBottom())	//Top/Bottom Walls
@@ -460,7 +460,7 @@ public class Main extends AbstractGame
 	//Pre: rec and gfx required to draw the GameRectangle
 	//Post: None
 	//Desc: Draws GameRectangle (outline only)
-	private static void drawRecLine (GameRectangle rec, Graphics2D gfx)
+	private static void drawRecLine(GameRectangle rec, Graphics2D gfx)
 	{
 		float height = rec.GetBottom() - rec.GetTop();
 		float width = rec.GetRight() - rec.GetLeft();
@@ -471,7 +471,7 @@ public class Main extends AbstractGame
 	//Pre: gfx is required for drawing
 	//Post: None
 	//Desc: Draws menu screen
-	private static void drawMenuScr (Graphics2D gfx)
+	private static void drawMenuScr(Graphics2D gfx)
 	{
 		Font titleFont = new Font("Copperplate Gothic Bold", Font.BOLD, 150);
 		Draw.Text(gfx, "Building", 95, 300, titleFont, white, 1f);
@@ -486,7 +486,7 @@ public class Main extends AbstractGame
 	//Pre: gfx is required for drawing
 	//Post: None
 	//Desc: draws manual screen
-	private static void drawManualScr (Graphics2D gfx)
+	private static void drawManualScr(Graphics2D gfx)
 	{
 		Draw.Text(gfx, menuText, 300, 200, menuFont, white, 1f);
 		Draw.Text(gfx, "Press W for the backstory", 340, 450, instructionFont, white, 1f);
@@ -497,7 +497,7 @@ public class Main extends AbstractGame
 	//Pre: gfx is required for drawing
 	//Post: None
 	//Desc: draws back story screen
-	private static void drawStoryScr (Graphics2D gfx)
+	private static void drawStoryScr(Graphics2D gfx)
 	{
 		Draw.Text(gfx, menuText, 215, 200, menuFont, white, 1f);
 		
@@ -524,7 +524,7 @@ public class Main extends AbstractGame
 	//Pre: gfx is required for drawing
 	//Post: None
 	//Desc: Draws instruction screen
-	private static void drawInstrScr (Graphics2D gfx)
+	private static void drawInstrScr(Graphics2D gfx)
 	{
 		Font labelFont = new Font ("Times New Roman", Font.PLAIN, 20);
 		Draw.Text(gfx, menuText, 155, 150, menuFont, white, 1f);
@@ -556,7 +556,7 @@ public class Main extends AbstractGame
 	//Pre: gfx is required for drawing
 	//Post: None
 	//Desc: draws settings screen
-	private static void drawSettingsScr (Graphics2D gfx)
+	private static void drawSettingsScr(Graphics2D gfx)
 	{
 		Draw.Text(gfx, menuText, 250, 200, menuFont, white, 1f);
 		
@@ -618,7 +618,7 @@ public class Main extends AbstractGame
 	//Pre: gfx is required for drawing, gc is required for defining bounding box for SpriteSheets
 	//Post: None
 	//Desc: draws game screen
-	private static void drawGameScr (Graphics2D gfx, GameContainer gc)
+	private static void drawGameScr(Graphics2D gfx, GameContainer gc)
 	{ 
 		//Tells user about undo option if they have at least one ingredient 
 		if (stack[0] != null)
@@ -675,7 +675,7 @@ public class Main extends AbstractGame
 	//Pre: gfx is required for drawing
 	//Post: None
 	//Desc: Draws score screen
-	private static void drawScoreScr (Graphics2D gfx)
+	private static void drawScoreScr(Graphics2D gfx)
 	{
 		Draw.Text(gfx, "Score", 350, 200, menuFont, white, 1f);
 		Draw.Text(gfx, "Your score:", 380, 450, instructionFont, white, 1f);
@@ -688,7 +688,7 @@ public class Main extends AbstractGame
 	//Pre: circle is required for its coordinates
 	//Post: returns true if there's a collision, false otherwise
 	//Desc: detecs collision between circle and mouse click
-	private static boolean pointCircleColl (GameCircle circle)
+	private static boolean pointCircleColl(GameCircle circle)
 	{
 		//Calculates the distance squared using pythagorean theorem between the point and the circle's centre
 		double distanceSqr = Math.pow(mousePos.x - circle.GetCentre().x, 2) + Math.pow(mousePos.y - circle.GetCentre().y, 2);
@@ -766,7 +766,7 @@ public class Main extends AbstractGame
 	//Pre: one two and three are sound effects to be stopped
 	//Post: None
 	//Desc: Stops sound effects
-	private static void stopScoreSnds (SoundClip one, SoundClip two, SoundClip three, SoundClip four)
+	private static void stopScoreSnds(SoundClip one, SoundClip two, SoundClip three, SoundClip four)
 	{
 		one.Stop();
 		two.Stop();
@@ -791,7 +791,7 @@ public class Main extends AbstractGame
 	//Pre: None
 	//Post: None
 	//Desc: calculates player's score
-	private static void calcScore ()
+	private static void calcScore()
 	{
 		double subtotal = 0; //Stores player's score out of 10
 		
@@ -828,7 +828,7 @@ public class Main extends AbstractGame
 	//Pre: None
 	//Post: None
 	//Desc: Resets game settings
-	private static void resetGame ()
+	private static void resetGame()
 	{
 		timer = setMilisec;
 		seconds = setSec;
